@@ -9,6 +9,12 @@
 *
 ********************************************************************************/
 -->*}
+<style>
+    .progress .bar {
+        width: 60px !important;
+    }
+</style>
+
 {strip}
     <div class="col-sm-6 col-lg-6 col-md-6">
         <div class="record-header clearfix">
@@ -67,6 +73,49 @@
                     </div>
                 </div>
                 *}
+
+
+                <div class="progress "  style="margin: -100px -238px 0px 0px">
+                    <div class="circle {if $advancePayment eq '1'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="1st follow">
+                            Advance Payment
+                        </span>
+                    </div>
+
+                    <span class="bar done"></span>
+                    <div class="circle {if $quotesReady eq '1'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="2nd follow">
+                            Quotes Ready
+                        </span>
+                    </div>
+
+                    <span class="bar done"></span>
+                    <div class="circle {if $siteVisit eq '1'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="3rd follow">
+                            Site Visit
+                        </span>
+                    </div>
+
+                    <span class="bar done"></span>
+                    <div class="circle {if $design2d eq '1'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="3rd follow">
+                            2D design 
+                        </span>
+                    </div>
+
+                    <span class="bar done"></span>
+                    <div class="circle {if $design3d eq '1'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="3rd follow">
+                            3D design
+                        </span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

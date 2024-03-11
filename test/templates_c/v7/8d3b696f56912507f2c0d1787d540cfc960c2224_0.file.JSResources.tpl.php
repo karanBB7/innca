@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2024-01-02 10:15:22
+/* Smarty version 3.1.39, created on 2024-03-11 07:43:20
   from 'C:\xampp\htdocs\innca\layouts\v7\modules\Vtiger\JSResources.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_6593e23a7ad740_01029213',
+  'unifunc' => 'content_65eeb6185c3501_37476885',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '8d3b696f56912507f2c0d1787d540cfc960c2224' => 
     array (
       0 => 'C:\\xampp\\htdocs\\innca\\layouts\\v7\\modules\\Vtiger\\JSResources.tpl',
-      1 => 1702454222,
+      1 => 1705517886,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6593e23a7ad740_01029213 (Smarty_Internal_Template $_smarty_tpl) {
+function content_65eeb6185c3501_37476885 (Smarty_Internal_Template $_smarty_tpl) {
 echo '<script'; ?>
  type="text/javascript" src="<?php echo vresource_url('layouts/v7/lib/jquery/purl.js');?>
 "><?php echo '</script'; ?>
@@ -189,5 +189,21 @@ echo '<script'; ?>
 				}
 			}
 		});<?php echo '</script'; ?>
+><?php echo '<script'; ?>
+>
+var elements = document.querySelectorAll(".vicon-whatsapp");
+elements.forEach(function(element) {
+        element.innerHTML = '';
+        var whatsappIcon = document.createElement("i");
+        whatsappIcon.className = "fa fa-whatsapp";
+        whatsappIcon.setAttribute("aria-hidden", "true");
+        
+        whatsappIcon.style.fontSize = "26px"; 
+        whatsappIcon.style.color = "green";
+        whatsappIcon.style.marginLeft = "-14px";
+        
+        element.appendChild(whatsappIcon);
+});
+<?php echo '</script'; ?>
 ><?php }
 }

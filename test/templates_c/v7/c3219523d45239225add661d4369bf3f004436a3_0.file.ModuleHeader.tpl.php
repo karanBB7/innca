@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2024-01-02 10:15:55
+/* Smarty version 3.1.39, created on 2024-03-11 07:43:38
   from 'C:\xampp\htdocs\innca\layouts\v7\modules\Vtiger\ModuleHeader.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_6593e25b443ee1_19468048',
+  'unifunc' => 'content_65eeb62a766ce5_51366552',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'c3219523d45239225add661d4369bf3f004436a3' => 
     array (
       0 => 'C:\\xampp\\htdocs\\innca\\layouts\\v7\\modules\\Vtiger\\ModuleHeader.tpl',
-      1 => 1702454222,
+      1 => 1702537022,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6593e25b443ee1_19468048 (Smarty_Internal_Template $_smarty_tpl) {
+function content_65eeb62a766ce5_51366552 (Smarty_Internal_Template $_smarty_tpl) {
 ?>
 <div class="col-sm-11 col-xs-10 padding0 module-action-bar clearfix coloredBorderTop"><div class="module-action-content clearfix <?php echo $_smarty_tpl->tpl_vars['MODULE']->value;?>
 -module-action-content"><div class="col-lg-7 col-md-6 col-sm-5 col-xs-11 padding0 module-breadcrumb module-breadcrumb-<?php echo $_REQUEST['view'];?>

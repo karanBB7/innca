@@ -356,6 +356,12 @@ class ProjectTask extends CRMEntity {
 				if(class_exists('ModComments')) ModComments::addWidgetTo(array('ProjectTask'));
 			}
 
+			$modcommentsModuleInstance = Vtiger_Module::getInstance('Whatsapp');
+			if($modcommentsModuleInstance && file_exists('modules/Whatsapp/Whatsapp.php')) {
+				include_once 'modules/Whatsapp/Whatsapp.php';
+				if(class_exists('Whatsapp')) Whatsapp::addWidgetTo(array('ProjectTask'));
+			}
+
 			$result = $adb->pquery("SELECT 1 FROM vtiger_modentity_num WHERE semodule = ? AND active = 1", array($modulename));
 			if (!($adb->num_rows($result))) {
 				//Initialize module sequence for the module
@@ -375,6 +381,12 @@ class ProjectTask extends CRMEntity {
 			if($modcommentsModuleInstance && file_exists('modules/ModComments/ModComments.php')) {
 				include_once 'modules/ModComments/ModComments.php';
 				if(class_exists('ModComments')) ModComments::addWidgetTo(array('ProjectTask'));
+			}
+
+			$modcommentsModuleInstance = Vtiger_Module::getInstance('Whatsapp');
+			if($modcommentsModuleInstance && file_exists('modules/Whatsapp/Whatsapp.php')) {
+				include_once 'modules/Whatsapp/Watsapp.php';
+				if(class_exists('Whatsapp')) Whatsapp::addWidgetTo(array('ProjectTask'));
 			}
 
 			$result = $adb->pquery("SELECT 1 FROM vtiger_modentity_num WHERE semodule = ? AND active = 1", array($modulename));

@@ -372,11 +372,23 @@ class Project extends CRMEntity {
 			$helpDeskModuleInstance = Vtiger_Module::getInstance('HelpDesk');
 			$helpDeskModuleInstance->setRelatedList($moduleInstance, 'Projects', Array('SELECT'), 'get_related_list');
 
+
+
 			$modcommentsModuleInstance = Vtiger_Module::getInstance('ModComments');
 			if($modcommentsModuleInstance && file_exists('modules/ModComments/ModComments.php')) {
 				include_once 'modules/ModComments/ModComments.php';
 				if(class_exists('ModComments')) ModComments::addWidgetTo(array('Project'));
 			}
+
+
+			$modcommentsModuleInstance = Vtiger_Module::getInstance('Whatsapp');
+			if($modcommentsModuleInstance && file_exists('modules/Whatsapp/Whatsapp.php')) {
+				include_once 'modules/Whatsapp/Whatsapp.php';
+				if(class_exists('Whatsapp')) Whatsapp::addWidgetTo(array('Project'));
+			}
+
+
+
 
 			$result = $adb->pquery("SELECT 1 FROM vtiger_modentity_num WHERE semodule = ? AND active = 1", array($modulename));
 			if (!($adb->num_rows($result))) {
@@ -412,6 +424,13 @@ class Project extends CRMEntity {
 			if($modcommentsModuleInstance && file_exists('modules/ModComments/ModComments.php')) {
 				include_once 'modules/ModComments/ModComments.php';
 				if(class_exists('ModComments')) ModComments::addWidgetTo(array('Project'));
+			}
+
+			// Add Comments widget to Project module
+			$modcommentsModuleInstance = Vtiger_Module::getInstance('Whatsapp');
+			if($modcommentsModuleInstance && file_exists('modules/Whatsapp/Whatsapp.php')) {
+				include_once 'modules/Whatsapp/Whatsapp.php';
+				if(class_exists('Whatsapp')) Whatsapp::addWidgetTo(array('Project'));
 			}
 
 			$result = $adb->pquery("SELECT 1 FROM vtiger_modentity_num WHERE semodule = ? AND active = 1", array($modulename));

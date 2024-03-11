@@ -16,7 +16,7 @@
 			</div>
 
 
-            <div class="progress ">
+            <div class="progress hide">
                 <div class="circle {if $PTTASKSTATUS1 eq 'Completed'} active {/if}">
                     <span class="label">✓</span>
                     <span class="title" title="Discussion and payment received">

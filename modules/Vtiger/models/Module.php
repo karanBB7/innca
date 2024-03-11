@@ -135,6 +135,43 @@ class Vtiger_Module_Model extends Vtiger_Module {
 		return $enabled;
 	}
 
+// for whatsapp
+
+
+
+	public function isCommentEnabledwhatsapp() {
+		$enabled = false;
+		$db = PearDatabase::getInstance();
+		$commentsModuleModel = Vtiger_Module_Model::getInstance('Whatsapp');
+		if($commentsModuleModel && $commentsModuleModel->isActive()) {
+			$relatedToFieldResult = $db->pquery('SELECT fieldid FROM vtiger_field WHERE fieldname = ? AND tabid = ?',
+					array('related_to', $commentsModuleModel->getId()));
+			$fieldId = $db->query_result($relatedToFieldResult, 0, 'fieldid');
+			if(!empty($fieldId)) {
+				$relatedModuleResult = $db->pquery('SELECT relmodule FROM vtiger_fieldmodulerel WHERE fieldid = ?', array($fieldId));
+				$rows = $db->num_rows($relatedModuleResult);
+
+				for($i=0; $i<$rows; $i++) {
+					$relatedModule = $db->query_result($relatedModuleResult, $i, 'relmodule');
+					if($this->getName() == $relatedModule) {
+						$enabled = true;
+					}
+				}
+			}
+		} else {
+			$enabled = false;
+		}
+		return $enabled;
+	}
+
+
+
+
+
+
+
+
+
 	public function isQuickPreviewEnabled(){
 		$enabled = false;
 		if($this->isSummaryViewSupported()){
@@ -970,6 +1007,63 @@ class Vtiger_Module_Model extends Vtiger_Module {
 		return $comments;
 	}
 
+
+// for whatsapp
+
+	public function getCommentswhatsapp($pagingModel,$user, $dateFilter='') {
+		$comments = array();
+		if(!$this->isCommentEnabledwhatsapp()) {
+			return $comments;
+		}
+		//TODO: need to handle security and performance
+		$db = PearDatabase::getInstance();
+		$params = array($this->getName());
+		$sql = 'SELECT vtiger_whatsapp.*,vtiger_crmentity.createdtime AS createdtime,vtiger_crmentity.smownerid AS smownerid 
+				FROM vtiger_whatsapp INNER JOIN vtiger_crmentity ON vtiger_whatsapp.modcommentsid = vtiger_crmentity.crmid 
+				AND vtiger_crmentity.deleted = 0 
+				INNER JOIN vtiger_crmentity crmentity2 ON vtiger_whatsapp.related_to = crmentity2.crmid 
+				AND crmentity2.deleted = 0 AND crmentity2.setype = ? 
+				INNER JOIN vtiger_modtracker_basic ON vtiger_modtracker_basic.crmid = vtiger_crmentity.crmid';
+
+		$currentUser = Users_Record_Model::getCurrentUserModel();
+		if($user === 'all') {
+			if(!$currentUser->isAdminUser()) {
+				$nonAdminAccessQuery = Users_Privileges_Model::getNonAdminAccessControlQuery('Whatsapp');
+				$sql .= $nonAdminAccessQuery;
+				$accessibleUsers = array_keys($currentUser->getAccessibleUsers());
+				$sql .= ' AND userid IN('.  generateQuestionMarks($accessibleUsers).')';
+				$params = array_merge($params, $accessibleUsers);
+			}
+		}else{
+			$sql .= ' AND userid = ?';
+			$params[] = $user;
+		}
+		//handling date filter for history widget in home page
+		if(!empty($dateFilter)) {
+			$sql .= ' AND vtiger_modtracker_basic.changedon BETWEEN ? AND ? ';
+			$params[] = $dateFilter['start'];
+			$params[] = $dateFilter['end'];
+		}
+
+		$sql .= ' ORDER BY vtiger_crmentity.createdtime DESC LIMIT ?, ?';
+		$params[] = $pagingModel->getStartIndex();
+		$params[] = $pagingModel->getPageLimit();
+		$result = $db->pquery($sql,$params);
+
+		$noOfRows = $db->num_rows($result);
+		//setting up the count of records before checking permissions in history
+		$pagingModel->set('historycount', $noOfRows);
+		for($i=0; $i<$noOfRows; $i++) {
+			$row = $db->query_result_rowdata($result, $i);
+			$commentModel = Vtiger_Record_Model::getCleanInstance('Whatsapp');
+			$commentModel->setData($row);
+			$comments[] = $commentModel;
+		}
+
+		return $comments;
+	}
+
+
 	/**
 	 * Function returns comments and recent activities across module
 	 * @param <Vtiger_Paging_Model> $pagingModel
@@ -1058,6 +1152,98 @@ class Vtiger_Module_Model extends Vtiger_Module {
 		}
 		return false;
 	}
+
+
+// for whatsapp
+
+
+	public function getHistorywhatsapp($pagingModel, $type='', $userId='', $dateFilter='') {
+		if(empty($userId)) $userId = 'all';
+				if(empty($type)) $type = 'all';
+
+		//TODO: need to handle security
+		$comments = array();
+		if($type == 'all' || $type == 'comments') {
+			$modCommentsModel = Vtiger_Module_Model::getInstance('Whatsapp');
+			if($modCommentsModel->isPermitted('DetailView')){
+				$comments = $this->getComments($pagingModel, $userId, $dateFilter);
+			}
+			if($type == 'comments') {
+				return $comments;
+			}
+		}
+
+		$db = PearDatabase::getInstance();
+				$sql = 'SELECT vtiger_modtracker_basic.*
+								FROM vtiger_modtracker_basic
+								INNER JOIN vtiger_crmentity ON vtiger_modtracker_basic.crmid = vtiger_crmentity.crmid
+								AND module = ?';
+
+				$currentUser = Users_Record_Model::getCurrentUserModel();
+				$params = array($this->getName());
+
+				if($userId === 'all') {
+					if(!$currentUser->isAdminUser()) {
+						$accessibleUsers = array_keys($currentUser->getAccessibleUsers());
+						$sql .= ' AND whodid IN ('.  generateQuestionMarks($accessibleUsers).')';
+						$params = array_merge($params, $accessibleUsers);
+					}
+				}else{
+					$sql .= ' AND whodid = ?';
+					$params[] = $userId;
+				}
+				//handling date filter for history widget in home page
+				if(!empty($dateFilter)) {
+					$sql .= ' AND vtiger_modtracker_basic.changedon BETWEEN ? AND ? ';
+					$params[] = $dateFilter['start'];
+					$params[] = $dateFilter['end'];
+				}
+
+				$sql .= ' ORDER BY vtiger_modtracker_basic.id DESC LIMIT ?, ?';
+				$params[] = $pagingModel->getStartIndex();
+				$params[] = $pagingModel->getPageLimit();
+		$result = $db->pquery($sql,$params);
+
+		$activites = array();
+		$noOfRows = $db->num_rows($result);
+		//set the records count before checking permissions and unsetting it
+		//If updates count more than comments count, this count should consider
+		if($pagingModel->get('historycount') < $noOfRows) {
+			$pagingModel->set('historycount', $noOfRows);
+		}
+		for($i=0; $i<$noOfRows; $i++) {
+			$row = $db->query_result_rowdata($result, $i);
+			if(Users_Privileges_Model::isPermitted($row['module'], 'DetailView', $row['crmid'])){
+				$modTrackerRecorModel = new ModTracker_Record_Model();
+				$modTrackerRecorModel->setData($row)->setParent($row['crmid'], $row['module']);
+				$time = $modTrackerRecorModel->get('changedon');
+				$activites[] = $modTrackerRecorModel;
+			}
+		}
+
+		$history = array_merge($activites, $comments);
+
+		$dateTime = array();
+		foreach($history as $model) {
+			if(get_class($model) == 'Whatsapp_Record_Model') {
+				$time = $model->get('createdtime');
+			} else {
+				$time = $model->get('changedon');
+			}
+			$dateTime[] = $time;
+		}
+
+		if(!empty($history)) {
+			array_multisort($dateTime,SORT_DESC,SORT_STRING,$history);
+			return $history;
+		}
+		return false;
+	}
+
+
+
+
+
 
 	/**
 	 * Function returns the Calendar Events for the module

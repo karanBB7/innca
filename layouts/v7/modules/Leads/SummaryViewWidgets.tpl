@@ -97,4 +97,41 @@
     {/if}
     {* Summary View Comments Widget Ends Here*}
 </div>
+
+
+<div class="middle-block col-lg-8">
+    <div class="summaryWidgetContainer">
+        <div class="widgetContainer_comments">
+            <div class="widget_header">
+                <h4 class="display-inline-block">Followup</h4>
+            </div><br><br>
+            <div class="widget_contents1">
+                <table class="class="table table-borderless"">
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="1stfollow" id="1stfollow" {if $follow1st eq '1'} checked {/if}> 1st Follow<br><br>
+                        <td>
+                    <tr>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name=2ndfollow" id="2ndfollow" {if $follow2nd eq '1'} checked {/if}> 2nd Follow<br><br>
+                        <td>
+                    <tr>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name=inccaVisit" id="inccaVisit" {if $inccaVisit eq '1'} checked {/if}> Incca Visit<br><br>
+                        <td>
+                    <tr>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="3rdfollow" id="3rdfollow" {if $follow3rd eq '1'} checked {/if}> 3rd Follow<br><br>
+                        <td>
+                    <tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {/strip}

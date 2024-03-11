@@ -705,6 +705,27 @@ Vtiger.Class("Vtiger_Detail_Js",{
 		}
 	},
 
+	registerRollupCommentswhatsappSwitchEvent : function() {
+		var self = this;
+		var commentsRelatedContainer = jQuery('.commentsRelatedContainer');
+		if(jQuery('#rollupcomments').length > 0 && commentsRelatedContainer.length) {
+			app.helper.hideProgress();
+			commentsRelatedContainer.off('switchChange.bootstrapSwitch')
+			.on('switchChange.bootstrapSwitch','#rollupcomments', function(e){
+				app.helper.showProgress();
+				self.toggleRollupComments(e);
+			});
+			if(jQuery('#rollupcomments').attr('rollup-status') == 1) {
+				jQuery('#rollupcomments').bootstrapSwitch('state', true, true);
+
+			}else{
+				jQuery('#rollupcomments').bootstrapSwitch('state', false, true);
+			}
+		}
+	},
+
+
+
 	/**
 	 * To handle related record delete confirmation message
 	 */
@@ -740,6 +761,20 @@ Vtiger.Class("Vtiger_Detail_Js",{
 			self.registerRollupCommentsSwitchEvent();
 			//END
 		});
+
+
+		app.event.on("post.relatedListLoad.click",function(event, container){
+			vtUtils.applyFieldElementsView(container);
+			vtUtils.enableTooltips();
+			var vtigerInstance = Vtiger_Index_Js.getInstance();
+			vtigerInstance.registerMultiUpload();
+			//For Rollup Comments
+			self.registerRollupCommentswhatsappSwitchEvent();
+			//END
+		});
+
+
+
 
 		var vtigerInstance = Vtiger_Index_Js.getInstance();
 		vtigerInstance.registerMultiUpload();
@@ -2017,6 +2052,105 @@ Vtiger.Class("Vtiger_Detail_Js",{
 		return aDeferred.promise();
 	},
 
+
+	/**
+	 * for whatsapp 1
+	 */
+
+	sendWhatsapp : function(e) {
+		var self = this;
+		var aDeferred = jQuery.Deferred();
+		var currentTarget = jQuery(e.currentTarget);
+		var form = jQuery(e.currentTarget).closest('form');
+		var commentMode = currentTarget.data('mode');
+		var closestCommentBlock = currentTarget.closest('.addCommentBlock');
+		var commentContent = closestCommentBlock.find('.commentcontent');
+		var formData = new FormData(form[0]); 
+		var commentContentValue = commentContent.val();
+		var isPrivate;
+		if(closestCommentBlock.find('#is_private').is(":checked")) {
+			isPrivate = 1;
+		} else {
+			isPrivate = 0;
+		}
+		var errorMsg;
+		if(commentContentValue.trim() == ""){
+			errorMsg = app.vtranslate('JS_LBL_COMMENT_VALUE_CANT_BE_EMPTY');
+			vtUtils.showValidationMessage(commentContent, errorMsg);
+			aDeferred.reject();
+			return aDeferred.promise();
+		}
+		  vtUtils.hideValidationMessage(commentContent);
+		if(commentMode == "edit"){
+			var editCommentReason = closestCommentBlock.find('[name="reasonToEdit"]').val();
+			isPrivate = closestCommentBlock.find('[name="is_private"]').val();
+		}
+
+		app.helper.showProgress();
+		var element = jQuery(e.currentTarget);
+		element.attr('disabled', 'disabled');
+
+		var commentInfoHeader = closestCommentBlock.closest('.commentDetails').find('.commentInfoHeader');
+		var commentId = commentInfoHeader.data('commentid');
+		var parentCommentId = commentInfoHeader.data('parentcommentid');
+		var commentRelatedTo = commentInfoHeader.data('relatedto');
+		if(!commentRelatedTo) commentRelatedTo = self.getRecordId();
+
+		var postData = {
+			'commentcontent' : 	commentContentValue,
+			'related_to': commentRelatedTo,
+			'module' : 'Whatsapp',
+			'is_private' : isPrivate
+		}
+		// console.log("to check the data", postData);
+		var incrementCount = false;
+		if(commentMode == "edit"){
+			postData['record'] = commentId;
+			postData['reasontoedit'] = editCommentReason;
+			postData['parent_comments'] = parentCommentId;
+			postData['mode'] = 'edit';
+			postData['action'] = 'Save';
+		} else if(commentMode == "add"){
+			postData['parent_comments'] = commentId;
+			postData['action'] = 'SaveAjax';
+			postData['filename'] = Vtiger_Index_Js.files,
+			incrementCount = true;
+		}
+		jQuery.each(postData, function (key, value) {
+			formData.append(key, value);
+		});
+		 postData = { 
+			'url': 'index.php', 
+			'type': 'POST', 
+			'data': formData, 
+			processData: false, 
+			contentType: false 
+		};		
+
+
+		app.request.post(postData).then(
+			function(err,data){
+				Vtiger_Index_Js.files = '';
+				jQuery('.MultiFile-remove').trigger('click');
+				app.helper.hideProgress();
+				if(incrementCount){
+					var tabElement = self.getTabByLabel("Whatsapp");
+					var relatedController = new Vtiger_RelatedList_Js(self.getRecordId(), app.getModuleName(), tabElement, self.getRelatedModuleName());
+					relatedController.updateRelatedRecordsCount(jQuery(tabElement).data('relation-id'),[1],true);
+				}
+				aDeferred.resolve(data);
+			},
+			function(textStatus, errorThrown){
+				app.helper.hideProgress();
+				element.removeAttr('disabled');
+				aDeferred.reject(textStatus, errorThrown);
+			}
+		);
+
+		return aDeferred.promise();
+	},
+
+
 	/**
 	 * function to remove comment block if its exists.
 	 */
@@ -2092,6 +2226,28 @@ Vtiger.Class("Vtiger_Detail_Js",{
 		});
 		return aDeferred.promise();
 	},
+
+
+	/**
+	 * for whatsapp 2
+	 */
+
+
+	getCommentUIwhatsapp : function(commentId){
+		var aDeferred = jQuery.Deferred();
+		var postData = {
+			'view' : 'DetailAjax',
+			'module' : 'Whatsapp',
+			'record' : commentId
+		}
+
+		app.request.post({"data":postData}).then(
+			function(err,data){
+				aDeferred.resolve(data);
+		});
+		return aDeferred.promise();
+	},
+
 
 
 	getRelatedRecordsCount : function(recordId, moduleName){
@@ -2195,6 +2351,59 @@ Vtiger.Class("Vtiger_Detail_Js",{
 			});
 		}
 	},
+
+
+
+	toggleRollupCommentswhatsapp : function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+		var self = this;
+		var currentTarget = jQuery(e.currentTarget);
+		var moduleName = currentTarget.attr('module');
+		var recordId = currentTarget.attr('record');
+		var rollupId = currentTarget.attr('rollupid');
+		var rollup_status = currentTarget.attr('rollup-status');
+		var rollupstatus = 0;
+		if (rollup_status == 0) {
+			rollupstatus = 1;
+		}
+		var viewtype = currentTarget.data('view');
+		var contents, url, params;
+
+		if(viewtype == 'relatedlist') {
+			url = 'index.php?module=Vtiger&view=WhatsappDetailAjax&parent='+moduleName+'&parentId='+recordId+
+								'&rollupid='+rollupId+'&rollup_status='+rollupstatus+'&mode=saveRollupSettings';
+			params = {
+				'type' : 'GET',
+				'url' : url
+			};
+			app.request.get(params).then(function(err, data){
+				currentTarget.attr('rollup-status', !rollupstatus);
+				jQuery('div.related-tabs li[data-label-key="Whatsapp"]').trigger('click');
+			});
+		} else {
+			url = 'index.php?module='+moduleName+'&relatedModule=Whatsapp&view=Detail&record='+
+					recordId+'&mode=showRecentComments'+'&rollupid='+rollupId
+					+'&rollup_status='+rollupstatus+'&parent='+moduleName+'&rollup-toggle=1&limit=5';
+			contents = jQuery('div[data-name="Whatsapp"] div.widget_contents');
+			params = {
+				'type' : 'GET',
+				'url' : url
+			};
+			app.request.get(params).then(function(err, data){
+				app.helper.hideProgress();
+				contents.html(data);
+				vtUtils.enableTooltips();
+				self.registerRollupCommentswhatsappSwitchEvent();
+				jQuery('#rollupcomments').bootstrapSwitch('state', rollupstatus, true);
+			});
+		}
+	},
+
+
+
+
+	
 
 	registerScrollForRollupEvents : function() {
 		var relatedController = this.getRelatedController();
@@ -2812,6 +3021,22 @@ Vtiger.Class("Vtiger_Detail_Js",{
 			}
 		});
 
+		detailContentsHolder.on('click','.detailViewSaveComment', function(e){
+			var element = jQuery(e.currentTarget);
+			if(!element.is(":disabled")) {
+				var dataObj = self.saveComment(e);
+				dataObj.then(function(){
+					var commentsContainer = detailContentsHolder.find("[data-name='Whatsapp']");
+					self.loadWidget(commentsContainer).then(function() {
+						element.removeAttr('disabled');
+						app.event.trigger('post.summarywidget.load',commentsContainer);
+						var indexInstance = Vtiger_Index_Js.getInstance();
+						indexInstance.registerMultiUpload();
+					});
+				});
+			}
+		});
+
 		detailContentsHolder.on('click','.saveComment', function(e){
 			var element = jQuery(e.currentTarget);
 			if(!element.is(":disabled")) {
@@ -2885,6 +3110,93 @@ Vtiger.Class("Vtiger_Detail_Js",{
 				});
 			}
 		});
+
+
+		
+		/**
+		 * for whatsapp
+		 */
+
+
+		detailContentsHolder.on('click','.sendWhatsapp', function(e){
+			var element = jQuery(e.currentTarget);
+			if(!element.is(":disabled")) {
+				var currentTarget = jQuery(e.currentTarget);
+				var mode = currentTarget.data('mode');
+				var dataObj = self.sendWhatsapp(e);
+
+				
+				dataObj.then(function(data){
+					var closestAddCommentBlock = currentTarget.closest('.addCommentBlock');
+					var commentTextAreaElement = closestAddCommentBlock.find('.commentcontent');
+					var commentInfoBlock = currentTarget.closest('.singleComment');
+					commentTextAreaElement.val('');
+
+					if(mode == "add"){
+						var commentId = data['id'];
+						var commentHtml = self.getCommentUIwhatsapp(commentId);
+						commentHtml.then(function(data){
+							var html;
+							if(jQuery(data).hasClass('privateComment')) {
+								html = '<ul class="unstyled"><li class="commentDetails" style="background: #fff9ea;">'+data+'</li></ul>';
+							} else {
+								html = '<ul class="unstyled"><li class="commentDetails">'+data+'</li></ul>';
+							}
+							var commentBlock = closestAddCommentBlock.closest('.commentDetails');
+							var detailContentsHolder = self.getContentHolder();
+							var noCommentsMsgContainer = jQuery('.noCommentsMsgContainer',detailContentsHolder);
+							noCommentsMsgContainer.remove();
+							if(commentBlock.length > 0){
+								closestAddCommentBlock.remove();
+								var childComments = commentBlock.find('ul');
+								if(childComments.length <= 0){
+									var currentChildCommentsCount = commentInfoBlock.find('.viewThreadBlock').data('childCommentsCount');
+									var newChildCommentCount = currentChildCommentsCount + 1;
+									commentInfoBlock.find('.childCommentsCount').text(newChildCommentCount);
+									var parentCommentId = commentInfoBlock.find('.commentInfoHeader').data('commentid');
+									self.getChildComments(parentCommentId).then(function(responsedata){
+										jQuery(responsedata).appendTo(commentBlock);
+										commentInfoBlock.find('.viewThreadBlock').hide();
+										commentInfoBlock.find('.hideThreadBlock').show();
+									});
+								}else {
+									jQuery(html).appendTo(commentBlock);
+								}
+							} else {
+								jQuery(html).prependTo(closestAddCommentBlock.closest('.commentContainer').find('.commentsList'));
+								commentTextAreaElement.css({height : '71px'});
+							}
+							commentInfoBlock.find('.commentActionsContainer').show();
+						});
+					}else if(mode == "edit"){
+						var modifiedTime = commentInfoBlock.find('.commentModifiedTime');
+						var commentInfoContent = commentInfoBlock.find('.commentInfoContent');
+						var commentEditStatus = commentInfoBlock.find('[name="editStatus"]');
+						var commentReason = commentInfoBlock.find('[name="editReason"]');
+						commentInfoContent.html(data.commentcontent);
+						commentReason.html(data.reasontoedit);
+						modifiedTime.text(data.modifiedtime);
+						modifiedTime.attr('title',data.modifiedtimetitle)
+						if(commentEditStatus.hasClass('hide')){
+							commentEditStatus.removeClass('hide');
+						}
+						if(data.reasontoedit != ""){
+							commentInfoBlock.find('.editReason').removeClass('hide')
+						}
+						commentInfoContent.show();
+						commentInfoBlock.find('.commentActionsContainer').show();
+						closestAddCommentBlock.remove();
+					}
+					element.removeAttr('disabled');
+					var indexInstance = Vtiger_Index_Js.getInstance();
+					indexInstance.registerMultiUpload();
+				});
+			}
+		});
+
+
+
+		
 
 		detailContentsHolder.on('click','.editComment', function(e){
 			self.removeCommentBlockIfExists();
@@ -2986,6 +3298,32 @@ Vtiger.Class("Vtiger_Detail_Js",{
 			vtUtils.enableTooltips();
 			//END
 		});		
+
+
+		app.event.on('post.summarywidget.load',function(event,widgetContainer){
+			vtUtils.applyFieldElementsView(widgetContainer);
+
+			//For Rollup Comments
+			if(jQuery('#rollupcomments').length > 0 && widgetContainer.data('name') == 'Whatsapp') {
+				widgetContainer.off('switchChange.bootstrapSwitch').on('switchChange.bootstrapSwitch', '#rollupcomments', function(e){
+					app.helper.showProgress();
+					self.toggleRollupComments(e);
+				});
+
+				if(jQuery('#rollupcomments').attr('rollup-status') == 1) {
+					jQuery('#rollupcomments').bootstrapSwitch('state', true, true);
+
+				}else{
+					jQuery('#rollupcomments').bootstrapSwitch('state', false, true);
+				}
+
+			}
+			var vtigerInstance = Vtiger_Index_Js.getInstance();
+			vtUtils.enableTooltips();
+			//END
+		});	
+
+
 		//For Rollup Comments
 		if(jQuery('#rollupcomments').length > 0) {
 			detailContentsHolder.on('switchChange.bootstrapSwitch', '#rollupcomments', function(e){
@@ -3116,6 +3454,72 @@ Vtiger.Class("Vtiger_Detail_Js",{
 		this.registerPostAjaxSaveEvent();
 	},
 
+	registerEventForFollowUp : function(e) {
+		jQuery('#1stfollow').on('change', function(){
+			var follow1st = $(this).is(':checked');
+			var record = jQuery('#recordId').val();
+			var params = {};
+			params.module = 'Leads';
+			params.view = 'FollowUp';
+			params.mode = 'follow1st';
+			params.record = record;
+			params.checkboxvalue = follow1st;
+
+			app.helper.showProgress();
+			app.request.post({'data': params}).then(function (err, html) {
+				app.helper.hideProgress();
+			});
+		});
+
+		jQuery('#2ndfollow').on('change', function(){
+			var follow2nd = $(this).is(':checked');
+			var record = jQuery('#recordId').val();
+			var params = {};
+			params.module = 'Leads';
+			params.view = 'FollowUp';
+			params.mode = 'follow2nd';
+			params.record = record;
+			params.checkboxvalue = follow2nd;
+
+			app.helper.showProgress();
+			app.request.post({'data': params}).then(function (err, html) {
+				app.helper.hideProgress();
+			});
+		});
+		
+		jQuery('#inccaVisit').on('change', function(){
+			var inccaVisit = $(this).is(':checked');
+			var record = jQuery('#recordId').val();
+			var params = {};
+			params.module = 'Leads';
+			params.view = 'FollowUp';
+			params.mode = 'inccaVisit';
+			params.record = record;
+			params.checkboxvalue = inccaVisit;
+
+			app.helper.showProgress();
+			app.request.post({'data': params}).then(function (err, html) {
+				app.helper.hideProgress();
+			});
+		});
+
+		jQuery('#3rdfollow').on('change', function(){
+			var follow3rd = $(this).is(':checked');
+			var record = jQuery('#recordId').val();
+			var params = {};
+			params.module = 'Leads';
+			params.view = 'FollowUp';
+			params.mode = 'follow3rd';
+			params.record = record;
+			params.checkboxvalue = follow3rd;
+
+			app.helper.showProgress();
+			app.request.post({'data': params}).then(function (err, html) {
+				app.helper.hideProgress();
+			});
+		});
+	},
+
 	//Events common for DetailView and OverlayDetailView
 	registerBasicEvents: function(){
 		var self = this;
@@ -3144,6 +3548,12 @@ Vtiger.Class("Vtiger_Detail_Js",{
 		this.registerClearReferenceSelectionEvent();
 		//register event for picklist dependency setup
 		this.registerEventForPicklistDependencySetup(this.getForm());
+
+		this.registerEventForFollowUp();
+
+
 		vtUtils.enableTooltips();
 	},
+
+	
 });

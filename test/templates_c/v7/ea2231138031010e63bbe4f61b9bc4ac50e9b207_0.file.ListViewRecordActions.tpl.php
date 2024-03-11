@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2024-01-02 10:16:14
+/* Smarty version 3.1.39, created on 2024-03-11 07:43:55
   from 'C:\xampp\htdocs\innca\layouts\v7\modules\Vtiger\ListViewRecordActions.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_6593e26e715526_34239234',
+  'unifunc' => 'content_65eeb63b7630a8_51120433',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'ea2231138031010e63bbe4f61b9bc4ac50e9b207' => 
     array (
       0 => 'C:\\xampp\\htdocs\\innca\\layouts\\v7\\modules\\Vtiger\\ListViewRecordActions.tpl',
-      1 => 1702454222,
+      1 => 1702537022,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6593e26e715526_34239234 (Smarty_Internal_Template $_smarty_tpl) {
+function content_65eeb63b7630a8_51120433 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!--LIST VIEW RECORD ACTIONS--><div class="table-actions"><?php if (!$_smarty_tpl->tpl_vars['SEARCH_MODE_RESULTS']->value) {?><span class="input" ><input type="checkbox" value="<?php echo $_smarty_tpl->tpl_vars['LISTVIEW_ENTRY']->value->getId();?>
 " class="listViewEntriesCheckBox"/></span><?php }
 if ($_smarty_tpl->tpl_vars['LISTVIEW_ENTRY']->value->get('starred') == vtranslate('LBL_YES',$_smarty_tpl->tpl_vars['MODULE']->value)) {

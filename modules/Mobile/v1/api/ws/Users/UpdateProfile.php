@@ -1,5 +1,5 @@
 <?php
-
+include_once dirname(__FILE__) . '../../../../api/ws/LoginAndFetchModules.php';
 class Mobile_WS_UpdateProfile extends Mobile_WS_Controller {
     function process(Mobile_API_Request $request) {
         global $current_user, $adb;
@@ -17,7 +17,7 @@ class Mobile_WS_UpdateProfile extends Mobile_WS_Controller {
             // $employeeRecordModel = Vtiger_Record_Model::getInstanceById($dataRow['serviceengineerid'], 'ServiceEngineer');
 
             $updateSql = "update vtiger_serviceengineer set service_engineer_name = ?,
-                    email = ? where serviceengineerid = ?";
+                    email = ? where serviceengineerid = ?"; 
             $adb->pquery($updateSql, array(
                 $request->get('service_engineer_name'),
                 $request->get('email'),
@@ -27,8 +27,15 @@ class Mobile_WS_UpdateProfile extends Mobile_WS_Controller {
         $recordModel = Vtiger_Record_Model::getInstanceById($recordId, 'Users');
         if (!empty($recordModel)) {
             $recordModel->set('mode', 'edit');
-            $recordModel->set('last_name', $request->get('service_engineer_name'));
+            $recordModel->set('first_name', $request->get('firstname'));
+            $recordModel->set('last_name', $request->get('lastname'));
             $recordModel->set('email1', $request->get('email'));
+            $recordModel->set('phone_mobile', $request->get('phone'));
+            $recordModel->set('address_street', $request->get('street'));
+            $recordModel->set('address_city', $request->get('city'));
+            $recordModel->set('address_state', $request->get('state'));
+            $recordModel->set('address_country', $request->get('country'));
+            $recordModel->set('address_postalcode', $request->get('postalcode'));
             $recordModel->save();
 
             // $employeeRecordModel->set('mode', 'edit');
@@ -49,12 +56,19 @@ class Mobile_WS_UpdateProfile extends Mobile_WS_Controller {
     function getUserDetailsForProfile($recordId) {
         $userDetails = [];
         $recordModel = Vtiger_Record_Model::getInstanceById($recordId, 'Users');
-        $imageObject = $recordModel->getImageDetails();
-        $imageArray = $imageObject[0];
-        $imageName = $imageArray['url'];
-        $userDetails['imagename'] = $imageName;
+        $mobileWsLogin = new Mobile_WS_Login(); // Instantiate the class
+		$imagewithurl = $mobileWsLogin->getUserImageDetails($recordId);
+        $userDetails['imagename'] = $imagewithurl;
         $userDetails['email'] = $recordModel->get('email1');
-        $userDetails['service_engineer_name'] = $recordModel->get('last_name');
+        $userDetails['firstname'] = $recordModel->get('first_name');
+        $userDetails['lastname'] = $recordModel->get('last_name');
+        $userDetails['phone'] = $recordModel->get('phone_mobile');
+        $userDetails['street'] = $recordModel->get('address_street');
+        $userDetails['city'] = $recordModel->get('address_city');
+        $userDetails['state'] = $recordModel->get('address_state');
+        $userDetails['country'] = $recordModel->get('address_country');
+        $userDetails['postalcode'] = $recordModel->get('address_postalcode');
+        
         return $userDetails;
     }
 }

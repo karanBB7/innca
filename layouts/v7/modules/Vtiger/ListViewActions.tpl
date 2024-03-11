@@ -19,6 +19,8 @@
                 {assign var=deleteAction value=$LIST_MASSACTION}
             {else if $LIST_MASSACTION->getLabel() eq 'LBL_ADD_COMMENT'}
                 {assign var=commentAction value=$LIST_MASSACTION}
+            {else if $LIST_MASSACTION->getLabel() eq 'LBL_ADD_COMMENTWHATSAPP'}
+                {assign var=commentActionwhatsapp value=$LIST_MASSACTION}
             {else}
                 {$a = array_push($LISTVIEW_MASSACTIONS_1, $LIST_MASSACTION)}
                 {* $a is added as its print the index of the array, need to find a way around it *}
@@ -46,6 +48,13 @@
                     </button>
                 {/if}
 
+                {if $commentActionwhatsapp}
+                    <button type="button" class="btn btn-default" id="{$MODULE}_listView_massAction_{$commentActionwhatsapp->getLabel()}" 
+                            onclick="Vtiger_List_Js.triggerMassAction('{$commentActionwhatsapp->getUrl()}')" title="{vtranslate('LBL_COMMENT', $MODULE)}" disabled="disabled">
+                        <i class="fa fa-whatsapp"></i>
+                    </button>
+                {/if}
+                
                 {if php7_count($LISTVIEW_MASSACTIONS_1) gt 0 or $LISTVIEW_LINKS['LISTVIEW']|@count gt 0}
                     <div class="btn-group listViewMassActions" role="group">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">

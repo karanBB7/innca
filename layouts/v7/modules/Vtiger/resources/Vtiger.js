@@ -35,6 +35,23 @@ Vtiger.Class('Vtiger_Index_Js', {
 		}
 	},
 
+
+	previewFile: function (e, recordId, attachmentId) {
+		e.stopPropagation();
+		if (recordId) {
+			var params = {
+				module: 'Whatsapp',
+				view: 'FilePreview',
+				record: recordId,
+				attachmentid: attachmentId
+			};
+			app.request.post({data: params}).then(function (err, res) {
+				app.helper.showModal(res);
+			});
+		}
+	},
+
+
 	/**
 	 * Function to show email preview in popup
 	 */
@@ -357,6 +374,24 @@ Vtiger.Class('Vtiger_Index_Js', {
 			}
 		});
 	},
+	
+	registerEventForLoadNewMessages : function() {
+	    if(app.getModuleName() == "Leads" || app.getModuleName() == "Potentials" || app.getModuleName() == "Project"){
+    	    $('.listViewActions').before('<button class="showUnRearMessages btn btn-default" style="margin: 0px 3px -45px -20px;"> UnRead Messages </button>');
+    	    
+    	    $('.showUnRearMessages').click('on', function(){ 
+    	        var params = {
+                    module: 'Vtiger',  
+                    view: 'GetWhatsAppMessages',
+                    mode: 'getWhatsAppMessages',
+                    sourcemodule: app.getModuleName()
+                };
+                app.request.post({data: params}).then(function (err, res) {
+    	            app.helper.showPopup(res);
+    	        });
+    	    });
+	    }
+	},
 
 	registerEvents: function() {
 		this.registerMenuToggle();
@@ -381,6 +416,8 @@ Vtiger.Class('Vtiger_Index_Js', {
 		this.registerEventForPostSaveFail();
 
 		vtUtils.enableTooltips();
+		
+		this.registerEventForLoadNewMessages();
 	},
 
 	addBodyScroll: function () {
@@ -1538,6 +1575,23 @@ Vtiger.Class('Vtiger_Index_Js', {
 					thisInstance.postRefrenceSearch(dataList, container);
 				}
 			}
+		});
+
+
+		jQuery('input[name="payment_tks_invoiceno"]').on(Vtiger_Edit_Js.postReferenceSelectionEvent,function(e,result){
+			var dataList = result.data;
+			var record = jQuery('input[name="payment_tks_invoiceno"]').val();
+			var params = {};
+			params.module = 'Vtiger';
+			params.view = 'GetData1';
+			params.record = record;
+			params.source_module = 'Quotes';
+
+			app.helper.showProgress();
+			app.request.post({'data': params}).then(function (err, html) {
+				app.helper.hideProgress();
+				console.log(html);
+			});
 		});
 	},
 

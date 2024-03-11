@@ -78,7 +78,7 @@ class CustomerPortal_Utils {
 
 	public static function isModuleActive($module) {
 		$activeModules = self::getActiveModules();
-		$defaultAllowedModules = array("ModComments", "History", "Contacts", "Accounts");
+		$defaultAllowedModules = array("ModComments","Whatsapp", "History", "Contacts", "Accounts");
 
 		if (in_array($module, $defaultAllowedModules)) {
 			return true;
@@ -98,7 +98,7 @@ class CustomerPortal_Utils {
 		$fieldnamesToResolve = Vtiger_Util_Helper::detectFieldnamesToResolve($module);
 		$activeFields = self::getActiveFields($module);
 
-		if (is_array($activeFields) && $module !== 'ModComments') {
+		if (is_array($activeFields) && $module !== 'ModComments' ||  $module !== 'Whatsapp') {
 			foreach ($fieldnamesToResolve as $key => $field) {
 				if (!in_array($field, $activeFields)) {
 					unset($fieldnamesToResolve[$key]);

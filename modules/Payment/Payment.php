@@ -134,26 +134,28 @@ class Payment extends Vtiger_CRMEntity {
 		}
 
 		$quoteid = $_REQUEST['payment_tks_invoiceno'];
-		$rquery = $adb->pquery("select total, balance, received, conversion_rate from vtiger_quotes q inner join vtiger_crmentity c on q.quoteid=c.crmid where c.deleted= 0 and q.quoteid=".$quoteid);
-		$total = $adb->query_result($rquery , 0 ,'total');
-		$balance = $adb->query_result($rquery , 0 ,'balance');
-		$received = $adb->query_result($rquery , 0 ,'received');
-	    $conversion_rate = $adb->query_result($rquery , 0 ,'conversion_rate');
-
-		$payment = $_REQUEST['payment_tks_paymenttotal'];
-
-		if($balance == 0){
-		   $exbalance = $total - $payment;
-		   $adb->pquery("update vtiger_quotes set received=".$payment.", balance =".$exbalance." where quoteid=".$quoteid);
-		   $log->debug("update vtiger_quotes set received=".$payment.", balance =".$exbalance." where quoteid=".$quoteid);
-	    }else{
-	    	$payquery = $adb->pquery("select SUM(payment_tks_paymenttotal) as payment from vtiger_payment p inner join vtiger_crmentity c on p.paymentid=c.crmid where c.deleted= 0 and p.payment_tks_invoiceno=".$quoteid);
-		    $totalreceived = $adb->query_result($payquery , 0 ,'payment');
-		    $totalreceived = $totalreceived * $conversion_rate;
-		    $exxbalance = $total - $totalreceived;
-		     $adb->pquery("update vtiger_quotes set received=".$totalreceived.", balance =".$exxbalance." where quoteid=".$quoteid);
-		     $log->debug("update vtiger_quotes set received=".$totalreceived.", balance =".$exxbalance." where quoteid=".$quoteid);
-	    }
+		if($quoteid){
+    		$rquery = $adb->pquery("select total, balance, received, conversion_rate from vtiger_quotes q inner join vtiger_crmentity c on q.quoteid=c.crmid where c.deleted= 0 and q.quoteid=".$quoteid);
+    		$total = $adb->query_result($rquery , 0 ,'total');
+    		$balance = $adb->query_result($rquery , 0 ,'balance');
+    		$received = $adb->query_result($rquery , 0 ,'received');
+    	    $conversion_rate = $adb->query_result($rquery , 0 ,'conversion_rate');
+    
+    		$payment = $_REQUEST['payment_tks_paymenttotal'];
+    
+    		if($balance == 0){
+    		   $exbalance = $total - $payment;
+    		   $adb->pquery("update vtiger_quotes set received=".$payment.", balance =".$exbalance." where quoteid=".$quoteid);
+    		   $log->debug("update vtiger_quotes set received=".$payment.", balance =".$exbalance." where quoteid=".$quoteid);
+    	    }else{
+    	    	$payquery = $adb->pquery("select SUM(payment_tks_paymenttotal) as payment from vtiger_payment p inner join vtiger_crmentity c on p.paymentid=c.crmid where c.deleted= 0 and p.payment_tks_invoiceno=".$quoteid);
+    		    $totalreceived = $adb->query_result($payquery , 0 ,'payment');
+    		    $totalreceived = $totalreceived * $conversion_rate;
+    		    $exxbalance = $total - $totalreceived;
+    		     $adb->pquery("update vtiger_quotes set received=".$totalreceived.", balance =".$exxbalance." where quoteid=".$quoteid);
+    		     $log->debug("update vtiger_quotes set received=".$totalreceived.", balance =".$exxbalance." where quoteid=".$quoteid);
+    	    }
+		}
 	}
 	/**
 	 * Function to check if entry exsist in webservices if not then enter the entry

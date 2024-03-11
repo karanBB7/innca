@@ -38,6 +38,7 @@ class VTEntityDelta extends VTEventHandler {
 
 		if($eventName == 'vtiger.entity.aftersave'){
 			$this->fetchEntity($moduleName, $recordId);
+			$this->fetchEntitywhatsapp($moduleName, $recordId);
 			$this->computeDelta($moduleName, $recordId);
 		}
 	}
@@ -47,6 +48,17 @@ class VTEntityDelta extends VTEventHandler {
 		$entityData = VTEntityData::fromEntityId($adb, $recordId, $moduleName);
 		if($moduleName == 'HelpDesk') {
 			$entityData->set('comments', getTicketComments($recordId));
+		} elseif($moduleName == 'Invoice') {
+			$entityData->set('invoicestatus', getInvoiceStatus($recordId));
+		}
+		self::$newEntity[$moduleName][$recordId] = $entityData;
+	}
+
+	function fetchEntitywhatsapp($moduleName, $recordId) {
+		$adb = PearDatabase::getInstance();
+		$entityData = VTEntityData::fromEntityId($adb, $recordId, $moduleName);
+		if($moduleName == 'HelpDesk') {
+			$entityData->set('comments', getTicketCommentswhatsapp($recordId));
 		} elseif($moduleName == 'Invoice') {
 			$entityData->set('invoicestatus', getInvoiceStatus($recordId));
 		}
@@ -85,6 +97,7 @@ class VTEntityDelta extends VTEventHandler {
 	function getEntityDelta($moduleName, $recordId, $forceFetch=false) {
 		if($forceFetch) {
 			$this->fetchEntity($moduleName, $recordId);
+			$this->fetchEntitywhatsapp($moduleName, $recordId);
 			$this->computeDelta($moduleName, $recordId);
 		}
 		return self::$entityDelta[$moduleName][$recordId];

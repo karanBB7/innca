@@ -105,6 +105,8 @@ class Vtiger_Field_Model extends Vtiger_Field {
 	const UITYPE_USER_STATUS = 115;
 	const UITYPE_USER_END_HOUR = 116;
 	const UITYPE_USER_IS_ADMIN = 156;
+
+	const UITYPE_WEBHOOK = 62;
 	
 	
 	/**
@@ -523,7 +525,8 @@ class Vtiger_Field_Model extends Vtiger_Field {
 	        self::UITYPE_CURRENCY_AMOUNT, 
 	        self::UITYPE_ATTACHMENT, 
 	        self::UITYPE_DOWNLOAD_TYPE,
-	        self::UITYPE_FILENAME
+	        self::UITYPE_FILENAME,
+			self::UITYPE_WEBHOOK,
 	    );
 		if(!$this->isEditable() || in_array($this->get('uitype'), $ajaxRestrictedFields)) {
 			return false;

@@ -226,6 +226,17 @@ class Vtiger_DetailView_Model extends Vtiger_Base_Model {
 			);
 		}
 
+		$whatsappModel = Vtiger_Module_Model::getInstance('Whatsapp');
+		if($moduleModel->isCommentEnabled() && $whatsappModel->isPermitted('DetailView')) {
+			$widgets[] = array(
+					'linktype' => 'DETAILVIEWWIDGET',
+					'linklabel' => 'Whatsapp',
+					'linkurl' => 'module='.$this->getModuleName().'&view=Detail&record='.$this->getRecord()->getId().
+							'&mode=showRecentComments&page=1&limit=5'
+			);
+		}
+
+
 		$userPrivilegesModel = Users_Privileges_Model::getCurrentUserPrivilegesModel();
 		$documentsInstance = Vtiger_Module_Model::getInstance('Documents');
 		if($userPrivilegesModel->hasModuleActionPermission($documentsInstance->getId(), 'DetailView') && $moduleModel->isModuleRelated('Documents')) {

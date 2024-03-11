@@ -174,6 +174,43 @@ Vtiger.Class("Vtiger_List_Js", {
 			listInstance.noRecordSelectedAlert();
 		}
 	},
+
+
+	triggerMassActionwhatsapp: function (massActionUrl) {
+
+		var listInstance = window.app.controller();
+		var listSelectParams = listInstance.getListSelectAllParams(true);
+		if (listSelectParams) {
+			var postData = listInstance.getDefaultParams();
+			delete postData.module;
+			delete postData.view;
+			delete postData.parent;
+			var data = app.convertUrlToDataParams(massActionUrl);
+			postData = jQuery.extend(postData, data);
+			postData = jQuery.extend(postData, listSelectParams);
+			app.helper.showProgress();
+			app.request.get({'data': postData}).then(
+					function (err, data) {
+						app.helper.hideProgress();
+						if (data) {
+							app.helper.showModal(data, {'cb': function (modal) {
+									if (postData.mode === "showAddCommentwhatsappForm") {
+										var vtigerInstance = Vtiger_Index_Js.getInstance();
+										vtigerInstance.registerMultiUpload();
+									}
+									app.event.trigger('post.listViewMassAction.loaded', modal);
+								}
+							});
+						}
+					}
+			);
+		} else {
+			listInstance.noRecordSelectedAlert();
+		}
+	},
+
+
+
 	showDuplicateSearchForm: function (url) {
 		app.helper.showProgress();
 		app.request.get({'url': url}).then(function (error, data) {

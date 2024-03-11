@@ -263,6 +263,33 @@ class Vtiger_Detail_View extends Vtiger_Index_View {
 			$viewer->assign('PTTASKSTATUS5', $pttaksStatus5);
 		}
 
+		if($moduleName == 'Leads'){
+			global $adb;
+			$query = $adb->pquery("SELECT * FROM vtiger_leads_followup WHERE leadsid = ?", array($recordId));
+			$follow1st = $query->fields['1stfollow'];
+			$follow2nd = $query->fields['2ndfollow'];
+			$inccaVisit = $query->fields['inccaVisit'];
+			$follow3rd = $query->fields['3rdfollow'];
+			$viewer->assign('follow1st', $follow1st);
+			$viewer->assign('follow2nd', $follow2nd);
+			$viewer->assign('inccaVisit', $inccaVisit);
+			$viewer->assign('follow3rd', $follow3rd);
+		}
+
+		if($moduleName == 'Potentials'){
+			global $adb;
+			$oppoquery = $adb->pquery("SELECT * FROM vtiger_oppo_followup WHERE oppoid = ?", array($recordId));
+			$advancePayment = $oppoquery->fields['advancePayment'];
+			$quotesReady = $oppoquery->fields['quotesReady'];
+			$siteVisit = $oppoquery->fields['siteVisit'];
+			$design2d = $oppoquery->fields['design2d'];
+			$design3d = $oppoquery->fields['design3d'];
+			$viewer->assign('advancePayment', $advancePayment);
+			$viewer->assign('quotesReady', $quotesReady);
+			$viewer->assign('siteVisit', $siteVisit);
+			$viewer->assign('design2d', $design2d);
+			$viewer->assign('design3d', $design3d);
+		}
 
 		if($display) {
 			$this->preProcessDisplay($request);

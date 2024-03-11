@@ -126,6 +126,26 @@ class Vtiger_ListView_Model extends Vtiger_Base_Model {
 			);
 		}
 
+		$WhatsappModel = Vtiger_Module_Model::getInstance('Whatsapp');
+		if($moduleModel->isCommentEnabled() && $WhatsappModel->isPermitted('CreateView')) {
+			$massActionLinks[] = array(
+				'linktype' => 'LISTVIEWMASSACTION',
+				'linklabel' => 'LBL_ADD_COMMENTWHATSAPP',
+				'linkurl' => 'index.php?module='.$moduleModel->get('name').'&view=MassActionAjax&mode=showAddCommentwhatsappForm',
+				'linkicon' => ''
+			);
+		}
+
+		$WhatsappModel = Vtiger_Module_Model::getInstance('Whatsapp');
+		if($moduleModel->isCommentEnabled() && $WhatsappModel->isPermitted('CreateView')) {
+			$massActionLinks[] = array(
+				'linktype' => 'LISTVIEWMASSACTION',
+				'linklabel' => 'LBL_ADD_COMMENTWHATSAPP',
+				'linkurl' => 'index.php?module='.$moduleModel->get('name').'&view=MassActionAjax&mode=showAddCommentwhatsappForm',
+				'linkicon' => ''
+			);
+		}
+
 		foreach($massActionLinks as $massActionLink) {
 			$links['LISTVIEWMASSACTION'][] = Vtiger_Link_Model::getInstanceFromValues($massActionLink);
 		}
@@ -279,6 +299,31 @@ class Vtiger_ListView_Model extends Vtiger_Base_Model {
 		foreach($listViewEntries as $recordId => $record) {
 			$rawData = $db->query_result_rowdata($listResult, $index++);
 			$record['id'] = $recordId;
+			   
+		    $record['cf_1181'] = '';
+		    $record['cf_1183'] = '';
+			if($recordId){
+			    $moduleRecordModel = Vtiger_Record_Model::getInstanceById($recordId);
+			    if($moduleName == 'Leads'){
+			        $whatsappNumber = $moduleRecordModel->get('mobile');
+			    }else if($moduleName == 'Contacts'){
+			        $whatsappNumber = $moduleRecordModel->get('mobile');
+			    }
+			    
+			    if($whatsappNumber){
+			        $getWhatsappCountQuery = $db->pquery("SELECT count(*) as messagecount FROM received_whatsapp_message WHERE fromNumber LIKE '%".$whatsappNumber."%'", array());
+    			    $messagecount = $db->query_result($getWhatsappCountQuery, 0, 'messagecount');
+    			    if($moduleName == 'Leads'){
+    			        $record['cf_1181'] = $messagecount;
+    			    }else if($moduleName == 'Contacts'){
+    			        $record['cf_1183'] = $messagecount;
+    			    }
+			    }else{
+			        $record['cf_1181'] = '0';
+			        $record['cf_1183'] = '0';
+			    }
+			}
+			
 			$listViewRecordModels[$recordId] = $moduleModel->getRecordFromArray($record, $rawData);
 		}
 		return $listViewRecordModels;

@@ -107,7 +107,7 @@ class RecycleBin_Module_Model extends Vtiger_Module_Model {
 	 */
 	public function getAllModuleList(){
 		$moduleModels = parent::getEntityModules();
-		$restrictedModules = array('Emails', 'ProjectMilestone', 'ModComments', 'Rss', 'Portal', 'Integration', 'PBXManager', 'Dashboard', 'Home', 'Events');
+		$restrictedModules = array('Emails', 'ProjectMilestone', 'ModComments','Whatsapp', 'Rss', 'Portal', 'Integration', 'PBXManager', 'Dashboard', 'Home', 'Events');
 		foreach($moduleModels as $key => $moduleModel){
 			if(in_array($moduleModel->getName(),$restrictedModules) || $moduleModel->get('isentitytype') != 1){
 				unset($moduleModels[$key]);
@@ -152,6 +152,7 @@ class RecycleBin_Module_Model extends Vtiger_Module_Model {
         
         // Delete related mod comments
 		$this->deleteRelatedComments($recordIds);
+		$this->deleteRelatedCommentswhatsapp($recordIds);
         $this->deleteRelatedEmails($recordIds);
 
 		// TODO - Remove records from module tables and other related stores.
@@ -254,6 +255,15 @@ class RecycleBin_Module_Model extends Vtiger_Module_Model {
 		$query = 'DELETE vtiger_crmentity.* FROM vtiger_crmentity '
 				. 'INNER JOIN vtiger_modcomments ON vtiger_modcomments.modcommentsid = vtiger_crmentity.crmid '
 				. 'WHERE vtiger_modcomments.related_to in(' . generateQuestionMarks($recordIds) . ')';
+
+		$db->pquery($query, array($recordIds));
+	}
+    
+    public function deleteRelatedCommentswhatsapp($recordIds) {
+		$db = PearDatabase::getInstance();
+		$query = 'DELETE vtiger_crmentity.* FROM vtiger_crmentity '
+				. 'INNER JOIN vtiger_whatsapp ON vtiger_whatsapp.modcommentsid = vtiger_crmentity.crmid '
+				. 'WHERE vtiger_whatsapp.related_to in(' . generateQuestionMarks($recordIds) . ')';
 
 		$db->pquery($query, array($recordIds));
 	}

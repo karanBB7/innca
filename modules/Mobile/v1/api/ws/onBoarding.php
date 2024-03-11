@@ -1,16 +1,18 @@
 <?php
 
+include('config.inc.php');
+
 $onboardingScreens = [
     [
-        'image' => 'image_url_1.jpg',
+        'image' => $site_URL.'resources/onboarding/onboarding_1.png',
         'text' => 'Onboarding Screen 1 Text',
     ],
     [
-        'image' => 'image_url_2.jpg',
+        'image' => $site_URL.'resources/onboarding/onboarding_2.png',
         'text' => 'Onboarding Screen 2 Text',
     ],
     [
-        'image' => 'image_url_3.jpg',
+        'image' => $site_URL.'resources/onboarding/onboarding_3.png',
         'text' => 'Onboarding Screen 3 Text',
     ],
 ];

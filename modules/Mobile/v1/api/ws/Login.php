@@ -132,7 +132,8 @@ class Mobile_WS_Login extends Mobile_WS_Controller {
 		if (empty($recordId)) {
 			return NULL;
 		}
-		global $site_URL_NonHttp;
+		global $site_URL;
+		
 		$db = PearDatabase::getInstance();
 		$url = NULL;
 		if (!self::$userURLCache[$recordId]) {
@@ -145,7 +146,7 @@ class Mobile_WS_Login extends Mobile_WS_Controller {
 			$storedname = $db->query_result($result, 0, 'storedname');
 			$imagePath = $db->query_result($result, 0, 'path');
 			$imageId = $db->query_result($result, 0, 'attachmentsid');
-			$url = $site_URL_NonHttp . $imagePath. $imageId .'_'.$storedname;
+			$url = $site_URL . $imagePath. $imageId .'_'.$storedname;
 			self::$userURLCache[$recordId] = $url;
 			if (empty($imagePath)) {
 				self::$userURLCache[$recordId] = NULL;

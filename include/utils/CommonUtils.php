@@ -299,6 +299,10 @@ function getTicketComments($ticketid) {
 	return Vtiger_Functions::getTicketComments($ticketid);
 }
 
+function getTicketCommentswhatsapp($ticketid) {
+	return Vtiger_Functions::getTicketCommentswhatsapp($ticketid);
+}
+
 function makeRandomPassword() {
 	return Vtiger_Functions::generateRandomPassword();
 }

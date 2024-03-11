@@ -39,7 +39,7 @@ class Whatsapp_SaveAjax_Action extends Vtiger_SaveAjax_Action {
         
 		$response = new Vtiger_Response();
 		$response->setEmitType(Vtiger_Response::$EMIT_JSON);
-		$response->setResult($result);
+		$response->setResult($result);	
 		$response->emit();
 		
 
@@ -80,7 +80,7 @@ class Whatsapp_SaveAjax_Action extends Vtiger_SaveAjax_Action {
 	
 		$moduleTableMapping = [
 			'Leads' => [
-				'column' => 'phone',
+				'column' => 'mobile',
 				'table' => 'vtiger_leadaddress',
 				'identifier' => 'leadaddressid',
 			],
@@ -89,6 +89,16 @@ class Whatsapp_SaveAjax_Action extends Vtiger_SaveAjax_Action {
 				'table' => 'vtiger_contactdetails',
 				'identifier' => 'contactid',
 			],
+		    'Potentials' => [
+                'column' => 'mobile',
+                'table' => 'vtiger_potential',
+                'identifier' => 'potentialid',
+             ],
+            'Project' => [
+                'column' => 'cf_1185',
+                'table' => 'vtiger_projectcf',
+                'identifier' => 'projectid',
+             ],
 		];
 	
 		$relatedToModule = getSalesEntityType($relatedToId);
@@ -114,10 +124,16 @@ class Whatsapp_SaveAjax_Action extends Vtiger_SaveAjax_Action {
 					)
 				);
 				$data_json = json_encode($data);
-	
-				$url = 'https://whatsaapapi.onrender.com/send-text-message';
+				
+				$midlewareQuery = "SELECT id, middlewareurl, authtoken FROM middleware";
+				$midlewareResult = $adb->pquery($midlewareQuery);
+				$midlewareRow = $adb->fetchByAssoc($midlewareResult);
+				$middlewareurl = $midlewareRow['middlewareurl'];
+				$authtoken = $midlewareRow['authtoken'];				
+
+				$url =  $middlewareurl.'send-text-message';
 				$headers = array(
-					'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJPd25lck5hbWUiOiJrYXJhbi10ZXN0LWF1dGgiLCJpYXQiOjE2OTk1MjcyNzV9.h0PMMOPYBjREoV0I8-yHOrtH389qE_kG5DFdDxc08VY',
+					'Authorization:'.$authtoken,
 					'Content-Type: application/json'
 				);
 				$ch = curl_init($url);

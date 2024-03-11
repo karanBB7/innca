@@ -14,19 +14,27 @@ class Mobile_WS_UserInfo extends Mobile_WS_Controller {
 	function process(Mobile_API_Request $request) {
 		$current_user = $this->getActiveUser();
 		
+		$mobileWsLogin = new Mobile_WS_Login(); // Instantiate the class
+		$imagewithurl = $mobileWsLogin->getUserImageDetails($current_user->id);
+
 		$userinfo = array(
+			'profile_image' => $imagewithurl,
 			'username' => $current_user->user_name,
 			'id'       => $current_user->id,
 			'first_name' => $current_user->first_name,
 			'last_name' => $current_user->last_name,
 			'email' => $current_user->email1,
-			'time_zone' => $current_user->time_zone,
-			'hour_format' => $current_user->hour_format,
-			'date_format' => $current_user->date_format,
-			'is_admin' => $current_user->is_admin,
-			'call_duration' => $current_user->callduration,
-			'other_event_duration' => $current_user->othereventduration,
+			'phone' => $current_user->phone_mobile,
+			'address' => [
+				'street_address' => $current_user->address_street,
+				'city'			 => $current_user->address_city,
+				'state'			 => $current_user->address_state,
+				'country'		 => $current_user->address_country,
+				'postal_code'	 => $current_user->address_postalcode
+			]
+			
 		);
+		
 		
 		$allVisibleModules = Settings_MenuEditor_Module_Model::getAllVisibleModules();
 		$appModulesMap = array();
@@ -41,13 +49,15 @@ class Mobile_WS_UserInfo extends Mobile_WS_Controller {
 		
 		$response = new Mobile_API_Response();
 		$result['userinfo'] = $userinfo;
-		$result['menus'] = $appModulesMap;
-		$result['apps'] = Vtiger_MenuStructure_Model::getAppMenuList();
-		$result['defaultApp'] = $this->_getDefaultApp();
-		
+		//$result['menus'] = $appModulesMap;
+	//	$result['apps'] = Vtiger_MenuStructure_Model::getAppMenuList();
+		//$result['defaultApp'] = $this->_getDefaultApp();
+		$response->setApiSucessMessage('User Profile Is Fetched Successfully');
 		$response->setResult($result);
 		return $response;
 	}
+
+	
 	
 	function _getDefaultApp() {
 		return '';

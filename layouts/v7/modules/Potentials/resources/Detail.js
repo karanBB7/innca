@@ -274,6 +274,90 @@ Vtiger_Detail_Js("Potentials_Detail_Js",{
 	},
 	//New changed for 2d 3d attahcment
 
+
+	registerEventForFollowUp : function(e) {
+		jQuery('#advancePayment').on('change', function(){
+			var advancePayment = $(this).is(':checked');
+			var record = jQuery('#recordId').val();
+			var params = {};
+			params.module = 'Leads';
+			params.view = 'FollowUp';
+			params.mode = 'advancePayment';
+			params.record = record;
+			params.checkboxvalue = advancePayment;
+
+			app.helper.showProgress();
+			app.request.post({'data': params}).then(function (err, html) {
+				app.helper.hideProgress();
+			});
+		});
+
+		jQuery('#quotesReady').on('change', function(){
+			var quotesReady = $(this).is(':checked');
+			var record = jQuery('#recordId').val();
+			var params = {};
+			params.module = 'Leads';
+			params.view = 'FollowUp';
+			params.mode = 'quotesReady';
+			params.record = record;
+			params.checkboxvalue = quotesReady;
+
+			app.helper.showProgress();
+			app.request.post({'data': params}).then(function (err, html) {
+				app.helper.hideProgress();
+			});
+		});
+
+		jQuery('#siteVisit').on('change', function(){
+			var siteVisit = $(this).is(':checked');
+			var record = jQuery('#recordId').val();
+			var params = {};
+			params.module = 'Leads';
+			params.view = 'FollowUp';
+			params.mode = 'siteVisit';
+			params.record = record;
+			params.checkboxvalue = siteVisit;
+
+			app.helper.showProgress();
+			app.request.post({'data': params}).then(function (err, html) {
+				app.helper.hideProgress();
+			});
+		});
+
+		jQuery('#design2d').on('change', function(){
+			var design2d = $(this).is(':checked');
+			var record = jQuery('#recordId').val();
+			var params = {};
+			params.module = 'Leads';
+			params.view = 'FollowUp';
+			params.mode = 'design2d';
+			params.record = record;
+			params.checkboxvalue = design2d;
+
+			app.helper.showProgress();
+			app.request.post({'data': params}).then(function (err, html) {
+				app.helper.hideProgress();
+			});
+		});
+
+		jQuery('#design3d').on('change', function(){
+			var design3d = $(this).is(':checked');
+			var record = jQuery('#recordId').val();
+			var params = {};
+			params.module = 'Leads';
+			params.view = 'FollowUp';
+			params.mode = 'design3d';
+			params.record = record;
+			params.checkboxvalue = design3d;
+
+			app.helper.showProgress();
+			app.request.post({'data': params}).then(function (err, html) {
+				app.helper.hideProgress();
+			});
+		});
+	},
+
+
 	/**
 	 * Function which will register all the events
 	 */
@@ -295,5 +379,7 @@ Vtiger_Detail_Js("Potentials_Detail_Js",{
 		//New changed for 2d 3d attahcment
 		this.registerEventsForSaveAttachment();
 		//New changed for 2d 3d attahcment
+
+		this.registerEventForFollowUp();
 	}
 })

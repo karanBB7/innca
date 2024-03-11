@@ -85,4 +85,23 @@
 			}
 		});{/literal}
 	</script>
+
+
+
+
+<script>
+var elements = document.querySelectorAll(".vicon-whatsapp");
+elements.forEach(function(element) {
+        element.innerHTML = '';
+        var whatsappIcon = document.createElement("i");
+        whatsappIcon.className = "fa fa-whatsapp";
+        whatsappIcon.setAttribute("aria-hidden", "true");
+        
+        whatsappIcon.style.fontSize = "26px"; 
+        whatsappIcon.style.color = "green";
+        whatsappIcon.style.marginLeft = "-14px";
+        
+        element.appendChild(whatsappIcon);
+});
+</script>
 {/strip}

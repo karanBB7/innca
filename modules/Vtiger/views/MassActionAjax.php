@@ -17,6 +17,7 @@ class Vtiger_MassActionAjax_View extends Vtiger_IndexAjax_View {
 		$this->exposeMethod('showSendSMSForm');
 		$this->exposeMethod('showDuplicatesSearchForm');
 		$this->exposeMethod('transferOwnership');
+		$this->exposeMethod('showAddCommentwhatsappForm');
 	}
 
 	public function requiresPermission(Vtiger_Request $request){
@@ -31,6 +32,10 @@ class Vtiger_MassActionAjax_View extends Vtiger_IndexAjax_View {
 				case 'showAddCommentForm':
 					$permissions[] = array('module_parameter' => 'custom_module', 'action' => 'CreateView');
 					$request->set('custom_module', 'ModComments');
+					break;
+				case 'showAddCommentwhatsappForm':
+					$permissions[] = array('module_parameter' => 'custom_module', 'action' => 'CreateView');
+					$request->set('custom_module', 'Whatsapp');
 					break;
 				case 'showComposeEmailForm':
 					$permissions[] = array('module_parameter' => 'custom_module', 'action' => 'DetailView');
@@ -172,6 +177,55 @@ class Vtiger_MassActionAjax_View extends Vtiger_IndexAjax_View {
 
 		echo $viewer->view('AddCommentForm.tpl',$moduleName,true);
 	}
+
+
+
+	function showAddCommentwhatsappForm(Vtiger_Request $request){
+		$sourceModule = $request->getModule();
+		$moduleName = 'Whatsapp';
+		$cvId = $request->get('viewname');
+		$selectedIds = $request->get('selected_ids');
+		$excludedIds = $request->get('excluded_ids');
+        $tagParams = $request->get('tag_params');
+        if(empty($tagParams)){
+            $tagParams = array();
+        }
+
+		$viewer = $this->getViewer($request);
+		$viewer->assign('SOURCE_MODULE', $sourceModule);
+		$viewer->assign('MODULE', $moduleName);
+		$viewer->assign('CVID', $cvId);
+		$viewer->assign('SELECTED_IDS', $selectedIds);
+		$viewer->assign('EXCLUDED_IDS', $excludedIds);
+        $viewer->assign('TAG_PARAMS', $tagParams);
+		$viewer->assign('USER_MODEL', Users_Record_Model::getCurrentUserModel());
+        
+        $modCommentsModel = Vtiger_Module_Model::getInstance($moduleName);
+		$fileNameFieldModel = Vtiger_Field::getInstance("filename", $modCommentsModel);
+        $fileFieldModel = Vtiger_Field_Model::getInstanceFromFieldObject($fileNameFieldModel);
+        
+        
+        $searchKey = $request->get('search_key');
+        $searchValue = $request->get('search_value');
+		$operator = $request->get('operator');
+        if(!empty($operator)) {
+			$viewer->assign('OPERATOR',$operator);
+			$viewer->assign('ALPHABET_VALUE',$searchValue);
+            $viewer->assign('SEARCH_KEY',$searchKey);
+		}
+
+        $searchParams = $request->get('search_params');
+        if(!empty($searchParams)) {
+            $viewer->assign('SEARCH_PARAMS',$searchParams);
+        }
+        $viewer->assign('FIELD_MODEL', $fileFieldModel);
+        $viewer->assign('MAX_UPLOAD_LIMIT_MB', Vtiger_Util_Helper::getMaxUploadSize());
+		$viewer->assign('MAX_UPLOAD_LIMIT_BYTES', Vtiger_Util_Helper::getMaxUploadSizeInBytes());
+
+		echo $viewer->view('AddCommentFormwhatsapp.tpl',$moduleName,true);
+	}
+
+
 
 	/**
 	 * Function returns the Compose Email form

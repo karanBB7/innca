@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2024-01-02 10:15:58
+/* Smarty version 3.1.39, created on 2024-03-11 07:43:41
   from 'C:\xampp\htdocs\innca\layouts\v7\modules\Settings\ITS4YouInstaller\Reminder.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_6593e25e87a5f0_86733158',
+  'unifunc' => 'content_65eeb62d12de45_98171399',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '97590ee314d5da98eb33c1bb2610b2829dbbce4e' => 
     array (
       0 => 'C:\\xampp\\htdocs\\innca\\layouts\\v7\\modules\\Settings\\ITS4YouInstaller\\Reminder.tpl',
-      1 => 1702454222,
+      1 => 1702537022,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6593e25e87a5f0_86733158 (Smarty_Internal_Template $_smarty_tpl) {
+function content_65eeb62d12de45_98171399 (Smarty_Internal_Template $_smarty_tpl) {
 ?><li class="its4you_installer_menu"><div class="dropdown pull-left"><div class="dropdown-toggle displayInlineBlock" data-toggle="dropdown" aria-expanded="true"><a href="#" class="<?php echo $_smarty_tpl->tpl_vars['MODULE']->value;?>
 _menu_icon fa installer_icon"><div class="its4you_installer_badge numberCircle hide"></div></a></div><ul class="dropdown-menu its4you_installer_dropdown"><div id="its4you_installer_title"><div class="its4you_installer_icon"></div><div class="its4you_installer_text"><b><?php echo vtranslate($_smarty_tpl->tpl_vars['MODULE']->value,$_smarty_tpl->tpl_vars['MODULE']->value);?>
  <?php echo vtranslate('LBL_ALERTS',$_smarty_tpl->tpl_vars['QUALIFIED_MODULE']->value);?>

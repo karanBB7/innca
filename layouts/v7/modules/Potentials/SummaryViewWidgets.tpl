@@ -195,7 +195,45 @@
 			</div>
 		</div>
 		<!-- //New changed for 2d 3d attahcment -->
-		
-	</div>
+			
 
+		<div class="summaryWidgetContainer">
+	        <div class="widgetContainer_comments">
+	            <div class="widget_header">
+	                <h4 class="display-inline-block">Followup</h4>
+	            </div><br><br>
+	            <div class="widget_contents1">
+	                <table class="class="table table-borderless"">
+	                    <tr>
+	                        <td>
+	                            <input type="checkbox" name="advancePayment" id="advancePayment" {if $advancePayment eq '1'} checked {/if}> Advance Payment<br><br>
+	                        <td>
+	                    <tr>
+	                    <tr>
+	                        <td>
+	                            <input type="checkbox" name=quotesReady" id="quotesReady" {if $quotesReady eq '1'} checked {/if}> Quotes Ready<br><br>
+	                        <td>
+	                    <tr>
+	                    <tr>
+	                        <td>
+	                            <input type="checkbox" name="siteVisit" id="siteVisit" {if $siteVisit eq '1'} checked {/if}> Site Visit<br><br>
+	                        <td>
+	                    <tr>
+	                    <tr>
+	                        <td>
+	                            <input type="checkbox" name="design2d" id="design2d" {if $design2d eq '1'} checked {/if}> 2D design<br><br>
+	                        <td>
+	                    <tr>
+	                    <tr>
+	                        <td>
+	                            <input type="checkbox" name="design3d" id="design3d" {if $design3d eq '1'} checked {/if}> 3D design<br><br>
+	                        <td>
+	                    <tr>
+	                </table>
+	            </div>
+	        </div>
+	    </div>
+
+
+	</div>
 {/strip}

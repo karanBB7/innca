@@ -819,6 +819,48 @@ function vtws_transferComments($sourceRecordId, $destinationRecordId) {
 	}
 }
 
+// for whatsapp
+
+function vtws_transferLeadRelatedRecordswhatsapp($leadId, $relatedId, $seType) {
+
+	if(empty($leadId) || empty($relatedId) || empty($seType)){
+		throw new WebServiceException(WebServiceErrorCode::$LEAD_RELATED_UPDATE_FAILED,
+			"Failed to move related Records");
+	}
+	$status = vtws_getRelatedNotesAttachments($leadId, $relatedId);
+	if($status === false){
+		throw new WebServiceException(WebServiceErrorCode::$LEAD_RELATED_UPDATE_FAILED,
+			"Failed to move related Documents to the ".$seType);
+	}
+	//Retrieve the lead related products and relate them with this new account
+	$status = vtws_saveLeadRelatedProducts($leadId, $relatedId, $seType);
+	if($status === false){
+		throw new WebServiceException(WebServiceErrorCode::$LEAD_RELATED_UPDATE_FAILED,
+			"Failed to move related Products to the ".$seType);
+	}
+	$status = vtws_saveLeadRelations($leadId, $relatedId, $seType);
+	if($status === false){
+		throw new WebServiceException(WebServiceErrorCode::$LEAD_RELATED_UPDATE_FAILED,
+			"Failed to move Records to the ".$seType);
+	}
+	$status = vtws_saveLeadRelatedCampaigns($leadId, $relatedId, $seType);
+	if($status === false){
+		throw new WebServiceException(WebServiceErrorCode::$LEAD_RELATED_UPDATE_FAILED,
+			"Failed to move Records to the ".$seType);
+	}
+	vtws_transferCommentswhatsapp($leadId, $relatedId);
+}
+
+function vtws_transferCommentswhatsapp($sourceRecordId, $destinationRecordId) {
+	if(vtlib_isModuleActive('Whatsapp')) {
+		CRMEntity::getInstance('Whatsapp'); Whatsapp::transferRecords($sourceRecordId, $destinationRecordId);
+	}
+}
+
+
+
+
+
 function vtws_transferOwnership($ownerId, $newOwnerId, $delete=true) {
 	$db = PearDatabase::getInstance();
 	//Updating the smownerid, modifiedby in vtiger_crmentity
@@ -893,6 +935,88 @@ function vtws_transferOwnership($ownerId, $newOwnerId, $delete=true) {
 		RecalculateSharingRules();
 	}
 }
+
+// for whatsapp
+
+function vtws_transferOwnershipwhatsapp($ownerId, $newOwnerId, $delete=true) {
+	$db = PearDatabase::getInstance();
+	//Updating the smownerid, modifiedby in vtiger_crmentity
+	$db->pquery('UPDATE vtiger_crmentity SET smownerid=?, modifiedtime = ? WHERE smownerid=? AND setype<>?', array($newOwnerId, date('Y-m-d H:i:s'), $ownerId, 'Whatsapp'));
+	$db->pquery('UPDATE vtiger_crmentity SET modifiedby=? WHERE modifiedby=?', array($newOwnerId, $ownerId));
+
+	//deleting from vtiger_tracker
+	$db->pquery('DELETE FROM vtiger_tracker WHERE user_id=?', array($ownerId));
+
+	//delete from vtiger_homestuff
+	$db->pquery('DELETE FROM vtiger_homestuff WHERE userid=?', array($ownerId));
+
+	//updating the vtiger_import_maps
+	$db->pquery('UPDATE vtiger_import_maps SET assigned_user_id=? WHERE assigned_user_id=?', array($newOwnerId, $ownerId));
+
+	if (Vtiger_Utils::CheckTable('vtiger_customerportal_prefs')) {
+		$query = 'UPDATE vtiger_customerportal_prefs SET prefvalue = ? WHERE prefkey IN (?, ?) AND prefvalue = ?';
+		$params = array($newOwnerId, 'userid', 'defaultassignee', $ownerId);
+		$db->pquery($query, $params);
+	}
+
+	$sql = "SELECT tablename,columnname FROM vtiger_field 
+            LEFT JOIN vtiger_fieldmodulerel ON vtiger_field.fieldid=vtiger_fieldmodulerel.fieldid 
+            WHERE (uitype IN (?,?,?,?) OR (uitype=? AND relmodule=?)) AND columnname <> ? GROUP BY tablename,columnname ORDER BY NULL";
+	$result = $db->pquery($sql, array(52, 53, 77, 101, 10, 'Users', 'smcreatorid'));
+
+	$itwhatsapp = new SqlResultIteratord($db, $result);
+	$columnList = array();
+	foreach ($itwhatsapp as $row) {
+		$column = $row->tablename.'.'.$row->columnname;
+		if (!in_array($column, $columnList)) {
+			$columnList[] = $column;
+			if ($row->columnname == 'smownerid') {
+				$sql = "UPDATE $row->tablename set $row->columnname=? WHERE $row->columnname=? AND setype<>?";
+				$db->pquery($sql, array($newOwnerId, $ownerId, 'Whatsapp'));
+			} elseif ($row->tablename == 'vtiger_users' && $row->columnname == 'reports_to_id') {
+				$sql = "UPDATE $row->tablename SET $row->columnname = CASE WHEN id=? THEN ? ELSE ? END WHERE $row->columnname=?";
+				$db->pquery($sql, array($newOwnerId, '', $newOwnerId, $ownerId));
+			} else {
+				$sql = "UPDATE $row->tablename SET $row->columnname=? WHERE $row->columnname=?";
+				$db->pquery($sql, array($newOwnerId, $ownerId));
+			}
+		}
+	}
+                    
+	//update webforms assigned userid
+	$db->pquery("UPDATE vtiger_webforms SET ownerid = ? WHERE ownerid = ?", array($newOwnerId, $ownerId));
+
+	//update workflow tasks Assigned User from Deleted User to Transfer User
+	$newOwnerModel = Users_Record_Model::getInstanceById($newOwnerId, 'Users');
+	$ownerModel = Users_Record_Model::getInstanceById($ownerId, 'Users');
+
+	vtws_transferOwnershipForWorkflowTasks($ownerModel, $newOwnerModel);
+	vtws_updateWebformsRoundrobinUsersLists($ownerId, $newOwnerId);
+
+	//transferring non-private filters (status not 1) of deleted user to new selected user
+	$db->pquery('UPDATE vtiger_customview SET userid = ? WHERE userid = ? AND status != ?', array($newOwnerId, $ownerId, 1));
+	//transferring private shared filters of deleted user to selected user
+	$db->pquery('UPDATE vtiger_customview SET userid = ? WHERE userid = ? AND status = ? AND cvid IN (SELECT cvid FROM vtiger_cv2users UNION SELECT cvid FROM vtiger_cv2group UNION SELECT cvid FROM vtiger_cv2role UNION SELECT cvid FROM vtiger_cv2rs)', array($newOwnerId, $ownerId, 1));
+
+	if ($delete) {
+		//Delete from vtiger_users to vtiger_role vtiger_table
+		$db->pquery('DELETE FROM vtiger_users2group WHERE userid=?', array($ownerId));
+
+		//Mark user as deleted =1 
+		$db->pquery('UPDATE vtiger_users SET deleted=? WHERE id=?', array(1, $ownerId));
+
+		//Change the owner for report
+		$db->pquery('UPDATE vtiger_report SET owner=? WHERE owner=?', array($newOwnerId, $ownerId));
+
+		//Recalculate user privelege file
+		RecalculateSharingRules();
+	}
+}
+
+
+
+
+
 
 function vtws_updateWebformsRoundrobinUsersLists($ownerId, $newOwnerId) {
 	$db = PearDatabase::getInstance();
@@ -1071,6 +1195,17 @@ function vtws_transferPotentialRelatedRecords($potentialId, $relatedId, $seType)
 		CRMEntity::getInstance('ModComments');
 		ModComments::copyCommentsToRelatedRecord($potentialId, $relatedId);
 	}
+
+
+	// for whatsapp
+	
+	if (vtlib_isModuleActive('Whatsapp')) {
+		CRMEntity::getInstance('Whatsapp');
+		Whatsapp::copyCommentsToRelatedRecord($potentialId, $relatedId);
+	}
+
+
+
 	if (vtlib_isModuleActive('Documents')) {
 		vtws_transferRelatedPotentialDocuments($potentialId, $relatedId);
 	}

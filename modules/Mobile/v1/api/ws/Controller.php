@@ -10,7 +10,7 @@
 include_once 'include/Webservices/Utils.php';
 include_once 'modules/Mobile/Mobile.php';
 include_once dirname(__FILE__) . '/Utils.php';
-session_start();
+
 
 class Mobile_WS_Controller {
 	function requireLogin() {
@@ -32,13 +32,10 @@ class Mobile_WS_Controller {
 	}
 	
 	protected function getActiveUser() {
-		
-		
-		if ($this->activeUser === false) {
-			$userid = $this->sessionGet('_authenticated_user_id');
-			// Add debugging output
-		
-			if (!empty($userid)) {
+		if($this->activeUser === false) {
+			global $authenticated_user_id;
+			$userid = $authenticated_user_id;
+			if(!empty($userid)) {
 				$this->activeUser = CRMEntity::getInstance('Users');
 				$this->activeUser->retrieveCurrentUserInfoFromFile($userid);
 				global $current_user;
@@ -51,6 +48,7 @@ class Mobile_WS_Controller {
 	
 	function hasActiveUser() {
 		$user = $this->getActiveUser();
+
 		return ($user !== false);
 	}
 	

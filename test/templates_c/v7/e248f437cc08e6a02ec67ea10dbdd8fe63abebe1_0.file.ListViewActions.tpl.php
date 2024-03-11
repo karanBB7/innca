@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2024-01-02 10:16:12
+/* Smarty version 3.1.39, created on 2024-03-11 07:43:54
   from 'C:\xampp\htdocs\innca\layouts\v7\modules\Vtiger\ListViewActions.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_6593e26c29c9b1_17124972',
+  'unifunc' => 'content_65eeb63a09d886_94377251',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'e248f437cc08e6a02ec67ea10dbdd8fe63abebe1' => 
     array (
       0 => 'C:\\xampp\\htdocs\\innca\\layouts\\v7\\modules\\Vtiger\\ListViewActions.tpl',
-      1 => 1702454222,
+      1 => 1705515192,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6593e26c29c9b1_17124972 (Smarty_Internal_Template $_smarty_tpl) {
+function content_65eeb63a09d886_94377251 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_assignInScope('LISTVIEW_MASSACTIONS_1', array());?><div id="listview-actions" class="listview-actions-container"><?php
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['LISTVIEW_MASSACTIONS']->value, 'LIST_MASSACTION', false, NULL, 'massActions', array (
 ));
@@ -33,6 +33,8 @@ $_smarty_tpl->_assignInScope('editAction', $_smarty_tpl->tpl_vars['LIST_MASSACTI
 $_smarty_tpl->_assignInScope('deleteAction', $_smarty_tpl->tpl_vars['LIST_MASSACTION']->value);
 } elseif ($_smarty_tpl->tpl_vars['LIST_MASSACTION']->value->getLabel() == 'LBL_ADD_COMMENT') {
 $_smarty_tpl->_assignInScope('commentAction', $_smarty_tpl->tpl_vars['LIST_MASSACTION']->value);
+} elseif ($_smarty_tpl->tpl_vars['LIST_MASSACTION']->value->getLabel() == 'LBL_ADD_COMMENTWHATSAPP') {
+$_smarty_tpl->_assignInScope('commentActionwhatsapp', $_smarty_tpl->tpl_vars['LIST_MASSACTION']->value);
 } else {
 $_smarty_tpl->_assignInScope('a', array_push($_smarty_tpl->tpl_vars['LISTVIEW_MASSACTIONS_1']->value,$_smarty_tpl->tpl_vars['LIST_MASSACTION']->value));
 }
@@ -54,6 +56,11 @@ _listView_massAction_<?php echo $_smarty_tpl->tpl_vars['commentAction']->value->
 "onclick="Vtiger_List_Js.triggerMassAction('<?php echo $_smarty_tpl->tpl_vars['commentAction']->value->getUrl();?>
 ')" title="<?php echo vtranslate('LBL_COMMENT',$_smarty_tpl->tpl_vars['MODULE']->value);?>
 " disabled="disabled"><i class="fa fa-comment"></i></button><?php }
+if ($_smarty_tpl->tpl_vars['commentActionwhatsapp']->value) {?><button type="button" class="btn btn-default" id="<?php echo $_smarty_tpl->tpl_vars['MODULE']->value;?>
+_listView_massAction_<?php echo $_smarty_tpl->tpl_vars['commentActionwhatsapp']->value->getLabel();?>
+"onclick="Vtiger_List_Js.triggerMassAction('<?php echo $_smarty_tpl->tpl_vars['commentActionwhatsapp']->value->getUrl();?>
+')" title="<?php echo vtranslate('LBL_COMMENT',$_smarty_tpl->tpl_vars['MODULE']->value);?>
+" disabled="disabled"><i class="fa fa-whatsapp"></i></button><?php }
 if (php7_count($_smarty_tpl->tpl_vars['LISTVIEW_MASSACTIONS_1']->value) > 0 || count($_smarty_tpl->tpl_vars['LISTVIEW_LINKS']->value['LISTVIEW']) > 0) {?><div class="btn-group listViewMassActions" role="group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"><?php echo vtranslate('LBL_MORE','Vtiger');?>
 &nbsp;<span class="caret"></span></button><ul class="dropdown-menu" role="menu"><?php
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['LISTVIEW_MASSACTIONS_1']->value, 'LISTVIEW_MASSACTION', false, NULL, 'advancedMassActions', array (

@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2024-01-02 10:16:08
+/* Smarty version 3.1.39, created on 2024-03-11 07:43:51
   from 'C:\xampp\htdocs\innca\layouts\v7\modules\Vtiger\ModalFooter.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_6593e2686de599_04254043',
+  'unifunc' => 'content_65eeb637b880c6_99618011',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'b997be5c65a0f5ff92261b538c6cf418e65bc7f4' => 
     array (
       0 => 'C:\\xampp\\htdocs\\innca\\layouts\\v7\\modules\\Vtiger\\ModalFooter.tpl',
-      1 => 1702454222,
+      1 => 1702537022,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6593e2686de599_04254043 (Smarty_Internal_Template $_smarty_tpl) {
+function content_65eeb637b880c6_99618011 (Smarty_Internal_Template $_smarty_tpl) {
 ?><div class="modal-footer "><center><?php if ($_smarty_tpl->tpl_vars['BUTTON_NAME']->value != null) {
 $_smarty_tpl->_assignInScope('BUTTON_LABEL', $_smarty_tpl->tpl_vars['BUTTON_NAME']->value);
 } else {

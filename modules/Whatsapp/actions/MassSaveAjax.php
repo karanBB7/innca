@@ -40,7 +40,7 @@ class Whatsapp_MassSaveAjax_Action extends Vtiger_Mass_Action {
 		$currentUserModel = Users_Record_Model::getCurrentUserModel();
 		$moduleTableMapping = [
 			'Leads' => [
-				'column' => 'phone',
+				'column' => 'mobile',
 				'table' => 'vtiger_leadaddress',
 				'identifier' => 'leadaddressid',
 			],
@@ -49,12 +49,22 @@ class Whatsapp_MassSaveAjax_Action extends Vtiger_Mass_Action {
 				'table' => 'vtiger_contactdetails',
 				'identifier' => 'contactid',
 			],
+		    'Potentials' => [
+                'column' => 'mobile',
+                'table' => 'vtiger_potential',
+                'identifier' => 'potentialid',
+            ],
+            'Project' => [
+                'column' => 'cf_1185',
+                'table' => 'vtiger_projectcf',
+                'identifier' => 'projectid',
+             ],
 		];
 	
 		$sourceModule = $request->get('source_module');
 		$phoneNumbers = array();
 		$commentContent = $request->getRaw('commentcontent');
-	
+		$adb = PearDatabase::getInstance();
 		if (isset($moduleTableMapping[$sourceModule])) {
 			$moduleData = $moduleTableMapping[$sourceModule];
 			$phoneColumn = $moduleData['column'];
@@ -62,12 +72,12 @@ class Whatsapp_MassSaveAjax_Action extends Vtiger_Mass_Action {
 			$table = $moduleData['table'];
 	
 			foreach ($recordIds as $recordId) {
-				$db = mysqli_connect("localhost", "root", "", "vtiger");
-				$sql = "SELECT $phoneColumn FROM $table WHERE $identifierColumn = '$recordId'";
-				$res = mysqli_query($db, $sql);
-	
-				if ($res && mysqli_num_rows($res) > 0) {
-					$row = mysqli_fetch_assoc($res);
+				$query = "SELECT $phoneColumn FROM $table WHERE $identifierColumn = ?";
+				$params = array($recordId);
+				$result = $adb->pquery($query, $params);
+			
+				if ($adb->num_rows($result) > 0) {
+					$row = $adb->fetchByAssoc($result);
 					$phone = '91' . $row[$phoneColumn];
 					$phoneNumbers[$recordId] = $phone;
 				}
@@ -79,12 +89,18 @@ class Whatsapp_MassSaveAjax_Action extends Vtiger_Mass_Action {
 				"to" => $phoneNumber,
 				"name" => $commentContent,
 			);
-	
+			
+			$midlewareQuery = "SELECT id, middlewareurl, authtoken FROM middleware";
+			$midlewareResult = $adb->pquery($midlewareQuery);
+			$midlewareRow = $adb->fetchByAssoc($midlewareResult);
+			$middlewareurl = $midlewareRow['middlewareurl'];
+			$authtoken = $midlewareRow['authtoken'];
+			
 			$data_json = json_encode($data);
-			$url = 'https://midware.onrender.com/send-templatet';
+			$url = $middlewareurl.'send-template';
 			$headers = array(
-				'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJPd25lck5hbWUiOiJrYXJhbkJCIiwiaWF0IjoxNjkyMjU2OTk5fQ.l_e0ynSm3kziO9q4xFLpdehdK9E81M6na8bb0YXt3Dw',
-				'Content-Type: application/json',
+				'Authorization:'.$authtoken,
+				'Content-Type: application/json'
 			);
 	
 			$ch = curl_init($url);
@@ -93,9 +109,11 @@ class Whatsapp_MassSaveAjax_Action extends Vtiger_Mass_Action {
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 			$return = curl_exec($ch);
-			print_r($return);
 			curl_close($ch);
 		}	
-		return $recordModels;
+		//return $recordModels;
+		
+		$loadUrl = 'https://incca.crm-doctor.com/index.php?module='.$sourceModule.'&view=List';
+		header("Location: $loadUrl");
 	}
 }

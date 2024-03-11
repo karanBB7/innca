@@ -9,6 +9,12 @@
 *
 ********************************************************************************/
 -->*}
+<style>
+    .progress .bar {
+        width: 60px !important;
+    }
+</style>
+
 {strip}
     <div class="col-sm-6 col-lg-6 col-md-6">
         <div class="record-header clearfix">
@@ -66,7 +72,41 @@
                   <i class="fa fa-map-marker"></i>&nbsp;
                   <a class="showMap" href="javascript:void(0);" onclick='Vtiger_Index_Js.showMap(this);' data-module='{$RECORD->getModule()->getName()}' data-record='{$RECORD->getId()}'>{vtranslate('LBL_SHOW_MAP', $MODULE_NAME)}</a>
                </div>
+
+                <div class="progress " style="margin: -100px -100px 0px 200px;">
+                    <div class="circle {if $follow1st eq '1'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="1st follow">
+                            1st follow
+                        </span>
+                    </div>
+
+                    <span class="bar done"></span>
+                    <div class="circle {if $follow2nd eq '1'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="2nd follow">
+                            2nd follow
+                        </span>
+                    </div>
+
+                    <span class="bar done"></span>
+                    <div class="circle {if $inccaVisit eq '1'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="Innca Visit">
+                            Innca Visit
+                        </span>
+                    </div>
+
+                    <span class="bar done"></span>
+                    <div class="circle {if $follow3rd eq '1'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="3rd follow">
+                            3rd follow
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
 {/strip}

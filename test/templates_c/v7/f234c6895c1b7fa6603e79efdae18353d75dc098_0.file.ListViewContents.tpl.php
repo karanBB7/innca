@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2024-01-02 10:16:08
+/* Smarty version 3.1.39, created on 2024-03-11 07:43:51
   from 'C:\xampp\htdocs\innca\layouts\v7\modules\Vtiger\ListViewContents.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_6593e268b0d902_54808656',
+  'unifunc' => 'content_65eeb637e0f441_32160821',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'f234c6895c1b7fa6603e79efdae18353d75dc098' => 
     array (
       0 => 'C:\\xampp\\htdocs\\innca\\layouts\\v7\\modules\\Vtiger\\ListViewContents.tpl',
-      1 => 1702454222,
+      1 => 1702537022,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6593e268b0d902_54808656 (Smarty_Internal_Template $_smarty_tpl) {
+function content_65eeb637e0f441_32160821 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_subTemplateRender(vtemplate_path("PicklistColorMap.tpl",$_smarty_tpl->tpl_vars['MODULE']->value), $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, true);
 ?>
 

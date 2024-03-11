@@ -132,221 +132,236 @@ class Vtiger_Save_Action extends Vtiger_Action_Controller {
 		if($moduleName == 'Payment'){
 			$quotesid = $_REQUEST['payment_tks_invoiceno'];
 			$opportunityid = $_REQUEST['opportunityid'];
-			if($quotesid){
-				if($opportunityid){
-					$oppRecordModel = Vtiger_Record_Model::getInstanceById($opportunityid, 'Potentials');
-					$potentialname = $oppRecordModel->get('potentialname');
+			global $adb;
+			$paymentQuery = $adb->pquery("SELECT * FROM vtiger_payment 
+				INNER JOIN vtiger_crmentity ON vtiger_crmentity.crmid = vtiger_payment.paymentid 
+				WHERE vtiger_crmentity.deleted = 0 AND vtiger_payment.payment_tks_invoiceno = ? AND vtiger_payment.opportunityid = ?", array($quotesid, $opportunityid));
+			$paymentRow = $adb->num_rows($paymentQuery);
+			if($paymentRow == 2){
+				if($quotesid){
+					if($opportunityid){
+						$oppRecordModel = Vtiger_Record_Model::getInstanceById($opportunityid, 'Potentials');
+						$potentialname = $oppRecordModel->get('potentialname');
+						$contact_id = $oppRecordModel->get('contact_id');
+						
+						if($contact_id){
+						    $contactsRecordModel = Vtiger_Record_Model::getInstanceById($contact_id, 'Contacts');
+						    $mobile = $oppRecordModel->get('mobile');
+						}
 
-					$pRecordModel = Vtiger_Record_Model::getCleanInstance('Project');
-					$pRecordModel->set('projectname', $potentialname);
-					$pRecordModel->set('potentialid', $opportunityid);
-					$pRecordModel->save();
-					$projectId = $pRecordModel->getId();
+						$pRecordModel = Vtiger_Record_Model::getCleanInstance('Project');
+						$pRecordModel->set('projectname', $potentialname);
+						$pRecordModel->set('potentialid', $opportunityid);
+						$pRecordModel->set('cf_1185', $mobile);
+						$pRecordModel->save();
+						$projectId = $pRecordModel->getId();
 
-					$foyer = $oppRecordModel->get('foyer');
-					$living = $oppRecordModel->get('living');
-					$dining = $oppRecordModel->get('dining');
-					$mbr = $oppRecordModel->get('mbr');
-					$gbr = $oppRecordModel->get('gbr');
-					$kbr = $oppRecordModel->get('kbr');
-					$pooja = $oppRecordModel->get('pooja');
-					$drykitchen = $oppRecordModel->get('drykitchen');
-					$wetkitchen = $oppRecordModel->get('wetkitchen');
-					$servantroom = $oppRecordModel->get('servantroom');
-					$appliances = $oppRecordModel->get('appliances');
-					$hob = $oppRecordModel->get('hob');
-					$chimney = $oppRecordModel->get('chimney');
-					$microwave = $oppRecordModel->get('microwave');
-					$oven = $oppRecordModel->get('oven');
-					$dishwasher = $oppRecordModel->get('dishwasher');
-					$coffeemaker = $oppRecordModel->get('coffeemaker');
-					$bathroom1 = $oppRecordModel->get('bathroom1');
-					$bathroom2 = $oppRecordModel->get('bathroom2');
-					$commontoilet = $oppRecordModel->get('commontoilet');
-					$balconies = $oppRecordModel->get('oppo_balcony');
-					$terrace = $oppRecordModel->get('oppo_terrace');
-					
-					if($foyer == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Foyer');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
+						$foyer = $oppRecordModel->get('foyer');
+						$living = $oppRecordModel->get('living');
+						$dining = $oppRecordModel->get('dining');
+						$mbr = $oppRecordModel->get('mbr');
+						$gbr = $oppRecordModel->get('gbr');
+						$kbr = $oppRecordModel->get('kbr');
+						$pooja = $oppRecordModel->get('pooja');
+						$drykitchen = $oppRecordModel->get('drykitchen');
+						$wetkitchen = $oppRecordModel->get('wetkitchen');
+						$servantroom = $oppRecordModel->get('servantroom');
+						$appliances = $oppRecordModel->get('appliances');
+						$hob = $oppRecordModel->get('hob');
+						$chimney = $oppRecordModel->get('chimney');
+						$microwave = $oppRecordModel->get('microwave');
+						$oven = $oppRecordModel->get('oven');
+						$dishwasher = $oppRecordModel->get('dishwasher');
+						$coffeemaker = $oppRecordModel->get('coffeemaker');
+						$bathroom1 = $oppRecordModel->get('bathroom1');
+						$bathroom2 = $oppRecordModel->get('bathroom2');
+						$commontoilet = $oppRecordModel->get('commontoilet');
+						$balconies = $oppRecordModel->get('oppo_balcony');
+						$terrace = $oppRecordModel->get('oppo_terrace');
+						
+						if($foyer == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Foyer');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($living == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Living');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($dining == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Dining');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($mbr == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Master Badroom');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($gbr == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Guest Badroom');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($kbr == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Kids Badroom');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($pooja == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Pooja');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($drykitchen == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Drykitchen');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($wetkitchen == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Wetkitchen');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($servantroom == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Servantroom');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($appliances == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Appliances');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($hob == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Hob');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($chimney == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Chimney');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($microwave == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Microwave');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($oven == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Oven');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($dishwasher == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Dishwasher');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($coffeemaker == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Coffeemaker');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($bathroom1 == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Bathroom1');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($bathroom2 == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Bathroom2');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($commontoilet == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Commontoilet');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($balconies == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Balconies');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						if($terrace == 1){
+							$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
+							$ptRecordModel->set('projectmilestonename', 'Terrace');
+							$ptRecordModel->set('projectid', $projectId);
+							$ptRecordModel->save();
+						}
+
+						$projectRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectTask');
+						$projectRecordModel->set('projecttaskname', 'Discussion and payment received');
+						$projectRecordModel->set('projectid', $projectId);
+						$projectRecordModel->save();
+
+						$projectRecordModel1 = Vtiger_Record_Model::getCleanInstance('ProjectTask');
+						$projectRecordModel1->set('projecttaskname', 'Implementation');
+						$projectRecordModel1->set('projectid', $projectId);
+						$projectRecordModel1->save();
+
+						$projectRecordModel2 = Vtiger_Record_Model::getCleanInstance('ProjectTask');
+						$projectRecordModel2->set('projecttaskname', 'Installation');
+						$projectRecordModel2->set('projectid', $projectId);
+						$projectRecordModel2->save();
+
+						$projectRecordModel3 = Vtiger_Record_Model::getCleanInstance('ProjectTask');
+						$projectRecordModel3->set('projecttaskname', 'Site Verification');
+						$projectRecordModel3->set('projectid', $projectId);
+						$projectRecordModel3->save();
+
+						$projectRecordModel4 = Vtiger_Record_Model::getCleanInstance('ProjectTask');
+						$projectRecordModel4->set('projecttaskname', 'Closure');
+						$projectRecordModel4->set('projectid', $projectId);
+						$projectRecordModel4->save();
+
 					}
-
-					if($living == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Living');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($dining == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Dining');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($mbr == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Master Badroom');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($gbr == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Guest Badroom');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($kbr == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Kids Badroom');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($pooja == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Pooja');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($drykitchen == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Drykitchen');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($wetkitchen == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Wetkitchen');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($servantroom == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Servantroom');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($appliances == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Appliances');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($hob == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Hob');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($chimney == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Chimney');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($microwave == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Microwave');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($oven == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Oven');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($dishwasher == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Dishwasher');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($coffeemaker == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Coffeemaker');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($bathroom1 == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Bathroom1');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($bathroom2 == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Bathroom2');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($commontoilet == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Commontoilet');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($balconies == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Balconies');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					if($terrace == 1){
-						$ptRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectMilestone');
-						$ptRecordModel->set('projectmilestonename', 'Terrace');
-						$ptRecordModel->set('projectid', $projectId);
-						$ptRecordModel->save();
-					}
-
-					$projectRecordModel = Vtiger_Record_Model::getCleanInstance('ProjectTask');
-					$projectRecordModel->set('projecttaskname', 'Discussion and payment received');
-					$projectRecordModel->set('projectid', $projectId);
-					$projectRecordModel->save();
-
-					$projectRecordModel1 = Vtiger_Record_Model::getCleanInstance('ProjectTask');
-					$projectRecordModel1->set('projecttaskname', 'Implementation');
-					$projectRecordModel1->set('projectid', $projectId);
-					$projectRecordModel1->save();
-
-					$projectRecordModel2 = Vtiger_Record_Model::getCleanInstance('ProjectTask');
-					$projectRecordModel2->set('projecttaskname', 'Installation');
-					$projectRecordModel2->set('projectid', $projectId);
-					$projectRecordModel2->save();
-
-					$projectRecordModel3 = Vtiger_Record_Model::getCleanInstance('ProjectTask');
-					$projectRecordModel3->set('projecttaskname', 'Site Verification');
-					$projectRecordModel3->set('projectid', $projectId);
-					$projectRecordModel3->save();
-
-					$projectRecordModel4 = Vtiger_Record_Model::getCleanInstance('ProjectTask');
-					$projectRecordModel4->set('projecttaskname', 'Closure');
-					$projectRecordModel4->set('projectid', $projectId);
-					$projectRecordModel4->save();
-
 				}
 			}
+
 		}
 
 		if($request->get('relationOperation')) {

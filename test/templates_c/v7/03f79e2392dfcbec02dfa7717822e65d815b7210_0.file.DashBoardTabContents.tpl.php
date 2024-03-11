@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2024-01-02 10:15:55
+/* Smarty version 3.1.39, created on 2024-03-11 07:43:39
   from 'C:\xampp\htdocs\innca\layouts\v7\modules\Vtiger\dashboards\DashBoardTabContents.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_6593e25be959e4_53449050',
+  'unifunc' => 'content_65eeb62b15ae64_35106365',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '03f79e2392dfcbec02dfa7717822e65d815b7210' => 
     array (
       0 => 'C:\\xampp\\htdocs\\innca\\layouts\\v7\\modules\\Vtiger\\dashboards\\DashBoardTabContents.tpl',
-      1 => 1702454222,
+      1 => 1702537022,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6593e25be959e4_53449050 (Smarty_Internal_Template $_smarty_tpl) {
+function content_65eeb62b15ae64_35106365 (Smarty_Internal_Template $_smarty_tpl) {
 ?>
 <div class='dashBoardTabContainer'><?php $_smarty_tpl->_subTemplateRender(vtemplate_path("dashboards/DashBoardHeader.tpl",$_smarty_tpl->tpl_vars['MODULE_NAME']->value), $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('DASHBOARDHEADER_TITLE'=>vtranslate($_smarty_tpl->tpl_vars['MODULE']->value,$_smarty_tpl->tpl_vars['MODULE']->value)), 0, true);
 ?><br><div class="dashboardBanner"></div><div class="dashBoardTabContents clearfix"><div class="gridster_<?php echo $_smarty_tpl->tpl_vars['TABID']->value;?>

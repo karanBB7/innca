@@ -29,6 +29,10 @@
     content: "\e65c";
 }
 
+.vicon-whatsapp:before {
+	content: "\f232"; 
+}
+
 .vicon-accounts:before {
 	content: "\e600";
 }

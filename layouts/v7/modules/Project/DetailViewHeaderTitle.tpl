@@ -9,6 +9,16 @@
 *
 ********************************************************************************/
 -->*}
+<style>
+    .progress .bar {
+        width: 50px !important;
+    }
+
+    .progress .circle .title a {
+        width: 60px !important;
+        display: inline-block;
+    }
+</style>
 {strip}
     <div class="col-lg-6 col-md-6 col-sm-6">
         <div class="record-header clearfix">
@@ -50,6 +60,44 @@
                     {/if}
                 </div>
                 *}
+
+                <div class="progress " style="margin: -53px -125px 0px 95px;">
+                    <div class="circle {if $PTTASKSTATUS1 eq 'Completed'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="Discussion and payment received">
+                            <a href="index.php?module=ProjectTask&view=Detail&record={$PTTASK1}&app=PROJECT" target="_blank">Discussion and payment received</a>
+                        </span>
+                    </div>
+
+                    <span class="bar done"></span>
+                    <div class="circle {if $PTTASKSTATUS2 eq 'Completed'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="Implementation">
+                            <a href="index.php?module=ProjectTask&view=Detail&record={$PTTASK2}&app=PROJECT" target="_blank">Implementation</a>
+                        </span>
+                    </div>
+                    <span class="bar done"></span>
+                    <div class="circle {if $PTTASKSTATUS3 eq 'Completed'} active {/if}">
+                        <span class="label">✓</span>
+                    <span class="title" title="Installation">
+                        <a href="index.php?module=ProjectTask&view=Detail&record={$PTTASK3}&app=PROJECT" target="_blank">Installation</a>
+                    </span>
+                    </div>
+                    <span class="bar done"></span>
+                    <div class="circle {if $PTTASKSTATUS4 eq 'Completed'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="Site Verification">
+                            <a href="index.php?module=ProjectTask&view=Detail&record={$PTTASK4}&app=PROJECT" target="_blank">Site Verification</a>
+                        </span>
+                    </div>
+                    <span class="bar done"></span>
+                    <div class="circle {if $PTTASKSTATUS5 eq 'Completed'} active {/if}">
+                        <span class="label">✓</span>
+                        <span class="title" title="Closure">
+                            <a href="index.php?module=ProjectTask&view=Detail&record={$PTTASK5}&app=PROJECT" target="_blank">Closure</a>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -116,7 +116,7 @@ class Vtiger_Relation_Model extends Vtiger_Base_Model{
 		$parentModuleName = $parentModuleModel->getName();
 		$relatedModuleName = $relatedModuleModel->getName();
 		$functionName = $this->get('name');
-		if ($relatedModuleName == "ModComments") {
+		if ($relatedModuleName == "ModComments" || $relatedModuleName == "Whatsapp") {
 			$focus = CRMEntity::getInstance($relatedModuleName);
 			$query = $focus->$functionName($parentRecord->getId());
 		} else {

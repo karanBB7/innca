@@ -86,7 +86,7 @@ class CRMEntity {
 			return;
 		}
 
-		$userSpecificTableIgnoredModules = array('SMSNotifier', 'PBXManager', 'ModComments');
+		$userSpecificTableIgnoredModules = array('SMSNotifier', 'PBXManager', 'ModComments', 'Whatsapp');
 		if(in_array($moduleName, $userSpecificTableIgnoredModules)) return;
 
 		$userSpecificTable = Vtiger_Functions::getUserSpecificTableName($moduleName);
@@ -156,114 +156,7 @@ class CRMEntity {
 	 * @param array $file_details  - array which contains the file information(name, type, size, tmp_name and error)
 	 * return void
 	 */
-
 	function uploadAndSaveFile($id, $module, $file_details, $attachmentType='Attachment') {
-		global $log;
-		$log->debug("Entering into uploadAndSaveFile(".json_encode($file_details).") method.");
-
-		global $adb, $current_user;
-		global $upload_badext;
-
-		$date_var = date("Y-m-d H:i:s");
-
-		//to get the owner id
-		$ownerid = $this->column_fields['assigned_user_id'];
-		if (!isset($ownerid) || $ownerid == '')
-			$ownerid = $current_user->id;
-
-		if (isset($file_details['original_name']) && $file_details['original_name'] != null) {
-			$file_name = $file_details['original_name'];
-		} else {
-			$file_name = $file_details['name'];
-		}
-
-		// Check 1
-		$save_file = 'true';
-		//only images are allowed for Image Attachmenttype
-		$mimeType = vtlib_mime_content_type($file_details['tmp_name']);
-		$mimeTypeContents = explode('/', $mimeType);
-		// For contacts and products we are sending attachmentType as value
-
-		//============================== lokesh ===== changes
-		if ( $module != 'Invoice' && $module != 'Sitevisit' && $module != 'Vendors' && ( $attachmentType == 'Image' || ($file_details['size'] && $mimeTypeContents[0] == 'image'))) {
-			$save_file = validateImageFile($file_details);
-		}
-		//============================== lokesh ===== changes
-                $log->debug("File Validation status in Check1 save_file => $save_file");
-		if ($save_file == 'false') {
-			return false;
-		}
-
-		// Check 2
-		$save_file = 'true';
-		//only images are allowed for these modules
-		if ($module == 'Contacts' || $module == 'Products') {
-			$save_file = validateImageFile($file_details);
-		}
-                $log->debug("File Validation status in Check2 save_file => $save_file");
-		$binFile = sanitizeUploadFileName($file_name, $upload_badext);
-
-		$current_id = $adb->getUniqueID("vtiger_crmentity");
-
-		$filename = ltrim(basename(" " . $binFile)); //allowed filename like UTF-8 characters
-		$filetype = $file_details['type'];
-		$filetmp_name = $file_details['tmp_name'];
-
-		//get the file path inwhich folder we want to upload the file
-		$upload_file_path = decideFilePath();
-
-		// upload the file in server
-        $encryptFileName = Vtiger_Util_Helper::getEncryptedFileName($binFile);
-		$upload_status = copy($filetmp_name, $upload_file_path . $current_id . "_" . $encryptFileName);
-		// temporary file will be deleted at the end of request
-                $log->debug("Upload status of file => $upload_status");
-		if ($save_file == 'true' && $upload_status == 'true') {
-			if($attachmentType != 'Image' && $this->mode == 'edit') {
-				//Only one Attachment per entity delete previous attachments
-				$res = $adb->pquery('SELECT vtiger_seattachmentsrel.attachmentsid FROM vtiger_seattachmentsrel 
-									INNER JOIN vtiger_crmentity ON vtiger_crmentity.crmid = vtiger_seattachmentsrel.attachmentsid AND vtiger_crmentity.setype = ? 
-									WHERE vtiger_seattachmentsrel.crmid = ?',array($module.' Attachment',$id));
-				$oldAttachmentIds = array();
-				for($attachItr = 0;$attachItr < $adb->num_rows($res);$attachItr++) {
-					$oldAttachmentIds[] = $adb->query_result($res,$attachItr,'attachmentsid');
-				}
-				if(count($oldAttachmentIds)) {
-					$adb->pquery('DELETE FROM vtiger_seattachmentsrel WHERE attachmentsid IN ('.generateQuestionMarks($oldAttachmentIds).')',$oldAttachmentIds);
-					//TODO : revisit to delete actual file and attachment entry,as we need to see the deleted file in the history when its changed
-					//$adb->pquery('DELETE FROM vtiger_attachments WHERE attachmentsid IN ('.generateQuestionMarks($oldAttachmentIds).')',$oldAttachmentIds);
-					//$adb->pquery('DELETE FROM vtiger_crmentity WHERE crmid IN ('.generateQuestionMarks($oldAttachmentIds).')',$oldAttachmentIds);
-				}
-			}
-			//Add entry to crmentity
-			$sql1 = "INSERT INTO vtiger_crmentity (crmid,smcreatorid,smownerid,setype,description,createdtime,modifiedtime) VALUES (?, ?, ?, ?, ?, ?, ?)";
-			$params1 = array($current_id, $current_user->id, $ownerid, $module." ".$attachmentType, $this->column_fields['description'], $adb->formatDate($date_var, true), $adb->formatDate($date_var, true));
-			$adb->pquery($sql1, $params1);
-			//Add entry to attachments
-			//============================== lokesh ===== changes
-			$description = '';
-			if(!empty($file_details['fileFieldName'])){
-				$description = $file_details['fileFieldName'];
-			} else {
-				$description = $this->column_fields['description'];
-			}
-			$sql2 = "INSERT INTO vtiger_attachments(attachmentsid, name, description, type, path, storedname) values(?, ?, ?, ?, ?, ?)";
-			$params2 = array($current_id, $filename, $description, $filetype, $upload_file_path, $encryptFileName);
-			$adb->pquery($sql2, $params2);
-			//Add relation
-			//============================== lokesh ===== changes
-			$sql3 = 'INSERT INTO vtiger_seattachmentsrel VALUES(?,?)';
-			$params3 = array($id, $current_id);
-			$adb->pquery($sql3, $params3);
-                        $log->debug("File uploaded successfully with id => $current_id");
-			return $current_id;
-		} else {
-			//failed to upload file
-                    $log->debug('File upload failed');
-			return false;
-		}
-	}
-
-	function uploadAndSaveFileold($id, $module, $file_details, $attachmentType='Attachment') {
 		global $log;
 		$log->debug("Entering into uploadAndSaveFile($id,$module,$file_details) method.");
 
@@ -486,7 +379,6 @@ class CRMEntity {
 			$insert_columns = array_keys($params);
 			$insert_data = array_values($params);
 			$sql = "insert into vtiger_crmentity (".implode(",",$insert_columns).") values(".generateQuestionMarks($insert_data).")";
-
 			$adb->pquery($sql, $params);
 
 			$this->column_fields['createdtime'] = $created_date_var;
@@ -753,7 +645,6 @@ class CRMEntity {
 						if(php7_count($IMG_FILES)){
 							foreach($IMG_FILES as $fileIndex => $file) {
 								if($file['error'] == 0 && $file['name'] != '' && $file['size'] > 0) {
-									$file['fileFieldName'] = $fieldname;
 									if($_REQUEST[$fileIndex.'_hidden'] != '')
 										$file['original_name'] = vtlib_purify($_REQUEST[$fileindex.'_hidden']);
 									else {
@@ -819,6 +710,44 @@ class CRMEntity {
 							$skipUpdateForField = true;
 						}
 					}
+
+// for whatsapp
+
+					if($module == "Whatsapp") {
+						$UPLOADED_FILES = $_FILES[$fieldname];
+						$uploadedFileNames = array();
+						foreach($UPLOADED_FILES as $fileIndex => $file) {
+							if($file['error'] == 0 && $file['name'] != '' && $file['size'] > 0) {
+								if($_REQUEST[$fileindex.'_hidden'] != '') {
+									$file['original_name'] = vtlib_purify($_REQUEST[$fileindex.'_hidden']);
+								} else {
+									$file['original_name'] = stripslashes($file['name']);
+								}
+								$file['original_name'] = str_replace('"','',$file['original_name']);
+								$attachmentId = $this->uploadAndSaveFile($this->id,$module,$file);
+								if($attachmentId) {
+									$uploadedFileNames[] = $attachmentId;
+								}
+							} 
+						}
+						if(php7_count($uploadedFileNames)) {
+							$fldvalue = implode(',',$uploadedFileNames);
+						} else {
+							$skipUpdateForField = true;
+						}
+					} else {
+						$file = $_FILES[$fieldname];
+						if($file['error'] == 0 && $file['name'] != '' && $file['size'] > 0) {
+							$attachmentId = $this->uploadAndSaveFile($this->id,$module,$file);
+							if($attachmentId) $fldvalue = $attachmentId;
+						} else {
+							$skipUpdateForField = true;
+						}
+					}
+
+
+
+
 				} else {
 					$fldvalue = $this->column_fields[$fieldname];
 				}
@@ -1020,6 +949,7 @@ class CRMEntity {
 				}
 			}
 
+
 			$where_clause .= ' vtiger_crmentity.crmid=?';
 			$params[] = $record;
 
@@ -1106,7 +1036,12 @@ class CRMEntity {
 
 		if($em) {
 			//Event triggering code
-			$em->triggerEvent("vtiger.entity.aftersave", $entityData);
+
+			if($module_name == "Whatsapp"){
+				$em->triggerEvent("vtiger.entity.aftersavewhatsapp", $entityData);
+			}else{
+				$em->triggerEvent("vtiger.entity.aftersave", $entityData);
+			}
 			$em->triggerEvent("vtiger.entity.aftersave.final", $entityData);
 			//Event triggering code ends
 		}
@@ -3201,6 +3136,27 @@ class CRMEntity {
 		$current_user = vglobal('current_user');
 		$moduleName = $this->moduleName;
 		if($moduleName != 'ModComments') {
+			return false;
+		}
+		$queryGenerator = new EnhancedQueryGenerator($moduleName, $current_user);
+		if(is_object($this->column_fields)) {
+			$fields = $this->column_fields->getColumnFieldNames();
+		} else if(is_array($this->column_fields)) {
+			$fields = array_keys($this->column_fields);
+		}
+		array_push($fields, 'id');
+		$queryGenerator->setFields($fields);
+		$query = $queryGenerator->getQuery();
+		if($relatedRecordId){
+			$query .= " AND related_to = ".$relatedRecordId." ORDER BY vtiger_crmentity.createdtime DESC";
+		}
+		return $query;
+	}
+
+	function get_commentswhatsapp($relatedRecordId = false) {
+		$current_user = vglobal('current_user');
+		$moduleName = $this->moduleName;
+		if($moduleName != 'Whatsapp') {
 			return false;
 		}
 		$queryGenerator = new EnhancedQueryGenerator($moduleName, $current_user);

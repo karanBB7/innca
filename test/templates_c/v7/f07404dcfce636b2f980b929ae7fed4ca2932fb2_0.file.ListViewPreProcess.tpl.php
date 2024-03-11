@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2024-01-02 10:16:05
+/* Smarty version 3.1.39, created on 2024-03-11 07:43:50
   from 'C:\xampp\htdocs\innca\layouts\v7\modules\Vtiger\ListViewPreProcess.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_6593e2658926b0_44330270',
+  'unifunc' => 'content_65eeb6363639b6_64006963',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'f07404dcfce636b2f980b929ae7fed4ca2932fb2' => 
     array (
       0 => 'C:\\xampp\\htdocs\\innca\\layouts\\v7\\modules\\Vtiger\\ListViewPreProcess.tpl',
-      1 => 1702454222,
+      1 => 1702537022,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:modules/Vtiger/partials/Topbar.tpl' => 1,
   ),
 ),false)) {
-function content_6593e2658926b0_44330270 (Smarty_Internal_Template $_smarty_tpl) {
+function content_65eeb6363639b6_64006963 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_subTemplateRender("file:modules/Vtiger/partials/Topbar.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 ?>
 
