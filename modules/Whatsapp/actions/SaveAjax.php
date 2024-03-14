@@ -85,7 +85,7 @@ class Whatsapp_SaveAjax_Action extends Vtiger_SaveAjax_Action {
 				'identifier' => 'leadaddressid',
 			],
 			'Contacts' => [
-				'column' => 'phone',
+				'column' => 'mobile',
 				'table' => 'vtiger_contactdetails',
 				'identifier' => 'contactid',
 			],

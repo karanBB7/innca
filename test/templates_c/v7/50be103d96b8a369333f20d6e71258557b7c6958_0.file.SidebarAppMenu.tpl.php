@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2024-03-11 07:43:38
+/* Smarty version 3.1.39, created on 2024-03-13 10:32:41
   from 'C:\xampp\htdocs\innca\layouts\v7\modules\Vtiger\partials\SidebarAppMenu.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_65eeb62a1dcd46_07896716',
+  'unifunc' => 'content_65f180c95af773_75596661',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '50be103d96b8a369333f20d6e71258557b7c6958' => 
     array (
       0 => 'C:\\xampp\\htdocs\\innca\\layouts\\v7\\modules\\Vtiger\\partials\\SidebarAppMenu.tpl',
-      1 => 1702537022,
+      1 => 1710325682,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_65eeb62a1dcd46_07896716 (Smarty_Internal_Template $_smarty_tpl) {
+function content_65f180c95af773_75596661 (Smarty_Internal_Template $_smarty_tpl) {
 ?>
 <div class="app-menu hide" id="app-menu">
 	<div class="container-fluid">
@@ -134,6 +134,16 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 					</div>
 				</div>
 			<?php }?>
+
+		<div class="menu-item app-item app-item-misc" data-default-url="index.php?module=Whatsapp&view=dashboard">
+			<div class="menu-items-wrapper">
+				<span class=" fa fa-whatsapp"></span>
+				<span class="app-name textOverflowEllipsis">Whatsapp Dashboard</span>
+			</div>
+		</div>
+
+
+
 			<?php if ($_smarty_tpl->tpl_vars['USER_MODEL']->value->isAdminUser()) {?>
 				<?php if (vtlib_isModuleActive('ExtensionStore')) {?>
 					<div class="menu-item app-item app-item-misc" data-default-url="index.php?module=ExtensionStore&parent=Settings&view=ExtensionStore">

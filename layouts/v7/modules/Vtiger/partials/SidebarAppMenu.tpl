@@ -81,6 +81,16 @@
 					</div>
 				</div>
 			{/if}
+
+		<div class="menu-item app-item app-item-misc" data-default-url="index.php?module=Whatsapp&view=dashboard">
+			<div class="menu-items-wrapper">
+				<span class=" fa fa-whatsapp"></span>
+				<span class="app-name textOverflowEllipsis">Whatsapp Dashboard</span>
+			</div>
+		</div>
+
+
+
 			{if $USER_MODEL->isAdminUser()}
 				{if vtlib_isModuleActive('ExtensionStore')}
 					<div class="menu-item app-item app-item-misc" data-default-url="index.php?module=ExtensionStore&parent=Settings&view=ExtensionStore">

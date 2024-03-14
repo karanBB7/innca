@@ -181,6 +181,7 @@ class Leads_FollowUp_View extends Vtiger_IndexAjax_View {
 		}else{
 			$adb->pquery("INSERT INTO vtiger_oppo_followup(oppoid, advancePayment, quotesReady, siteVisit, design2d, design3d) VALUES (?,?,?,?,?,?)", array($recordId, 0, 0, 0, $design2d, 0));
 		}
+
 	}
 
 	public function design3d(Vtiger_Request $request) {

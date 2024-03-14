@@ -10,7 +10,7 @@ include('config.inc.php');
             'identifier' => 'leadaddressid',
         ],
         'Contacts' => [
-            'column' => 'phone',
+            'column' => 'mobile',
             'table' => 'vtiger_contactdetails',
             'identifier' => 'contactid',
         ],
