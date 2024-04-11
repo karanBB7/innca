@@ -1535,6 +1535,18 @@ Vtiger_Edit_Js("Inventory_Edit_Js", {
 			this.setPurchaseCostValue(parentRow, purchaseCost);
 			var imgSrc = recordData.imageSource;
 			this.setImageTag(parentRow, imgSrc);
+
+			//Product Image
+			var imgSrc = recordData.allProductImages;
+			var imageHTML = '';
+			if(imgSrc){
+				imgSrc.forEach(function(item) {
+					imageHTML += '<img src="'+item+'" height="50" width="100"><br>';
+				});
+				jQuery('div.productImage', parentRow).html(imageHTML);		
+			}
+			//Product Image
+			
 			if(referenceModule == 'Products') {
 				parentRow.data('quantity-in-stock',recordData.quantityInStock);
 			}

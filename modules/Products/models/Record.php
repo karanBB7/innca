@@ -411,6 +411,7 @@ class Products_Record_Model extends Vtiger_Record_Model {
 				$productIdsList[$productId]		= $productId;
 				$imageIdsList[$productId][]		= $db->query_result($result, $i, 'attachmentsid');
 				$imagePathList[$productId][]	= $db->query_result($result, $i, 'path');
+				$storedname[$productId][]	= $db->query_result($result, $i, 'storedname'); //Product Image
 
 				//decode_html - added to handle UTF-8 characters in file names
 				$imageOriginalNamesList[$productId][] = decode_html($imageName);
@@ -427,7 +428,8 @@ class Products_Record_Model extends Vtiger_Record_Model {
 														'id'		=> $imageIdsList[$productId][$j],
 														'orgname'	=> $imageOriginalNamesList[$productId][$j],
 														'path'		=> $imagePathList[$productId][$j].$imageIdsList[$productId][$j],
-														'name'		=> $imageNamesList[$productId][$j]
+														'name'		=> $imageNamesList[$productId][$j],
+														'storedname'=> $storedname[$productId][$j] //Product Image
 													);
 					}
 				}

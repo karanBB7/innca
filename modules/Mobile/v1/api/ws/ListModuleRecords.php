@@ -95,6 +95,7 @@ class Mobile_WS_ListModuleRecords extends Mobile_WS_Controller {
 						$record[$i]= decode_html($value); 
 					}
 				}
+				$record['webserviceEntityId']= vtws_getWebserviceEntityId($module, $index);
 				$records[] = $record;
 			}
 		}
@@ -114,6 +115,7 @@ class Mobile_WS_ListModuleRecords extends Mobile_WS_Controller {
 									'orderBy'=>$orderBy,
 									'sortOrder'=>$sortOrder,
 									'page'=>$page));
+		$response->setApiSucessMessage('Successfully Fetched Data');
 		return $response;
 	}
 
