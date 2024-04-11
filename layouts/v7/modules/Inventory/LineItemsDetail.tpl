@@ -197,7 +197,16 @@
                                     </div>
                                 {/if}
                             </td>
-                            <td><div align = "right">{$LINE_ITEM_DETAIL["product_category$INDEX"]}</div></td>
+                            <td>
+                                <div align = "right">{$LINE_ITEM_DETAIL["product_category$INDEX"]}</div>
+                                <!-- Product Image -->
+                                <div class="productImage">
+                                    {foreach item="productImageValue" key="productImageKey" from=$LINE_ITEM_DETAIL["productImages$INDEX"][$LINE_ITEM_DETAIL["hdnProductId$INDEX"]]}
+                                        <img src="{$productImageValue}" height="50" width="100"><br>
+                                    {/foreach}
+                                </div>
+                                <!-- Product Image -->
+                            </td>
                             <td><div align = "right">{$LINE_ITEM_DETAIL["usgunit$INDEX"]}</div></td>
                             <td><div align = "right">{$LINE_ITEM_DETAIL["varients$INDEX"]}</div></td>
                             <td><div align = "right">{$LINE_ITEM_DETAIL["length_value$INDEX"]}</div></td>

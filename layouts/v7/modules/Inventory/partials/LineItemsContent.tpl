@@ -28,6 +28,9 @@
     {assign var="productDescription" value="productDescription"|cat:$row_no}
     {assign var="qtyInStock" value="qtyInStock"|cat:$row_no}
     {assign var="qty" value="qty"|cat:$row_no}
+
+    {assign var="productImages" value="productImages"|cat:$row_no}
+    
     {assign var="listPrice" value="listPrice"|cat:$row_no}
     {assign var="productTotal" value="productTotal"|cat:$row_no}
     {assign var="subproduct_ids" value="subproduct_ids"|cat:$row_no}
@@ -93,6 +96,15 @@
 					{/if}
 				{/foreach}
 			</select>
+
+			<!-- Product Image -->
+			<br>	
+			<div class="productImage">
+				{foreach item="productImageValue" key="productImageKey" from=$data.$productImages[$data.$hdnProductId]}
+                    <img src="{$productImageValue}" height="50" width="100"><br>
+                {/foreach}
+			</div>
+			<!-- Product Image -->
 		</td>
 		<!-- New Changes Opp Module -->
 

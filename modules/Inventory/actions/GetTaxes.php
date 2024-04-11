@@ -75,6 +75,17 @@ class Inventory_GetTaxes_Action extends Vtiger_Action_Controller {
 			}
 		}
 
+		//Product Image
+		if ($productIdsList) {
+			$imageDetailsList = Products_Record_Model::getProductsImageDetails($productIdsList);
+			foreach ($imageDetailsList as $productId => $imageDetails) {
+				foreach ($imageDetails as $key => $value) {
+					$allProductImages[$productId][$key] = $value['path'].'_'.$value['storedname'];
+				}
+			}
+		}
+		//Product Image
+
 		foreach($idList as $id) {
 			$resultData = array(
 								'id'					=> $id,
@@ -86,7 +97,8 @@ class Inventory_GetTaxes_Action extends Vtiger_Action_Controller {
 								'description'			=> $descriptionsList[$id],
 								'baseCurrencyId'		=> $baseCurrencyIdsList[$id],
 								'quantityInStock'		=> $quantitiesList[$id],
-								'imageSource'			=> $imageSourcesList[$id]
+								'imageSource'			=> $imageSourcesList[$id],
+								'allProductImages'		=> $allProductImages[$id] //Product Image
 					);
 
 			$info[] = array($id => $resultData);

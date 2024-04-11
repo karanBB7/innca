@@ -228,13 +228,29 @@ function getAssociatedProducts($module, $focus, $seid = '', $refModuleName = fal
 		// Loop through the result set
 		for ($j = 0; $j < $adb->num_rows($result2); $j++) {
 		    $row2 = $adb->query_result($result2, $j, 'glacct');
-			
 		    $product_Detail[$i]['roww'.$j] = $row2;
-
 		}
 
-	
+		//Product Image
+		if($hdnProductId){
+			$sql = "SELECT vtiger_attachments.*, vtiger_crmentity.setype, vtiger_seattachmentsrel.crmid AS productid FROM vtiger_attachments
+						INNER JOIN vtiger_seattachmentsrel ON vtiger_seattachmentsrel.attachmentsid = vtiger_attachments.attachmentsid
+						INNER JOIN vtiger_crmentity ON vtiger_crmentity.crmid = vtiger_attachments.attachmentsid
+						WHERE vtiger_crmentity.setype = 'Products Image' AND vtiger_seattachmentsrel.crmid = ".$hdnProductId."";
 
+			$pimageresult = $adb->pquery($sql);
+			$count = $adb->num_rows($pimageresult);
+			$productImages = array();
+			for($k=0; $k<$count; $k++) {
+				$imageName = $adb->query_result($pimageresult, $k, 'name');
+				$imageIdsList = $adb->query_result($pimageresult, $k, 'attachmentsid');
+				$imagePathList = $adb->query_result($pimageresult, $k, 'path');
+				$storedname	= $adb->query_result($pimageresult, $k, 'storedname');
+				$productImages[$hdnProductId][] = $imagePathList.'/'.$imageIdsList.'_'.$storedname;
+			}
+			$product_Detail[$i]['productImages'.$i] = $productImages;
+		}
+		//Product Image
 
 		if ($purchaseCost) {
 			$product_Detail[$i]['purchaseCost'.$i] = number_format($purchaseCost, $no_of_decimal_places, '.', '');
